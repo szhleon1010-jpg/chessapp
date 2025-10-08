@@ -1,6 +1,6 @@
-import 'package:chessapp/Screens/AnalyzePage.dart';
+import 'package:chessapp/Screens/SavedGAmePage.dart';
 import 'package:chessapp/Screens/ProfilePage.dart';
-import 'package:chessapp/Screens/UploadPage.dart';
+import 'package:chessapp/Screens/Analyzepage.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,15 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
     ProfilePage()
   ];
   List<String> titles = [
-    "Upload Game",
-    "Analysis",
+    "Analyze New Game",
+    "Saved Games",
     "Profile",
   ];
-  int selectedscreen = 0;
+  int selectedScreen = 0;
 
   void onBarPressed(int index){
     setState(() {
-      selectedscreen = index;
+      selectedScreen = index;
     });
   }
   @override
@@ -34,11 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       bottomNavigationBar:BottomNavigationBar(
           items: [
-            BottomNavigationBarItem(icon:Icon (Icons.upload),label: "Upload Game"),
-            BottomNavigationBarItem(icon:Icon (Icons.compass_calibration),label: "Analysis"),
+            BottomNavigationBarItem(icon:Icon (Icons.upload),label: "Analyze New Game"),
+            BottomNavigationBarItem(icon:Icon (Icons.file_copy),label: "Saved Games"),
             BottomNavigationBarItem(icon:Icon (Icons.person_2_rounded),label: "Profile")
           ],
-        currentIndex: selectedscreen,
+        currentIndex: selectedScreen,
         onTap: onBarPressed,
       ),
       backgroundColor: Color(0xff0b0a0a),
@@ -48,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(
             color: Colors.white
           ),
-          titles[selectedscreen]
+          titles[selectedScreen]
         )
       ),
-      body: screens[selectedscreen ],
+      body: screens[selectedScreen ],
     );
   }
 }

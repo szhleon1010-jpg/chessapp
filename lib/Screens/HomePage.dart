@@ -1,5 +1,5 @@
-import 'package:chessapp/Screens/AnalyzePage.dart' show AnalyzePage;
-import 'package:chessapp/Screens/UploadPage.dart' show UploadPage;
+import 'package:chessapp/Screens/SavedGAmePage.dart' show AnalyzePage;
+import 'package:chessapp/Screens/Analyzepage.dart' show UploadPage;
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^4.1.1
   dart_openai: ^5.1.0
+  flutter_chess_board: ^1.0.1
 
 dev_dependencies:
   flutter_test:
