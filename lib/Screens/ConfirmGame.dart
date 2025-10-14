@@ -1,3 +1,4 @@
+import 'package:chessapp/Screens/ViewGame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
 
@@ -38,7 +39,20 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(onPressed: () => Navigator.pop(context), child: Text("No")),
-                  ElevatedButton(onPressed: () {}, child: Text("Yes"))
+                  ElevatedButton(
+                      onPressed: () {
+                        controller.resetBoard();
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) =>
+                                ViewGamePage(gameString: widget.gameString,
+                                    controller: controller)
+                            )
+                        );
+                        },
+                      child: Text("Yes"),
+                  )
                 ],
               ),
             ),
@@ -57,7 +71,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
       appBar: AppBar(
         foregroundColor: Colors.white,
         backgroundColor: Color(0xff171515),
-        title: Text("View Game"),
+        title: Text("Confirm Game"),
 
       ),
     );
