@@ -1,4 +1,5 @@
 import 'package:chessapp/Screens/ViewGame.dart';
+import 'package:chessapp/Screens/confirmPage.dart';
 import 'package:flutter/material.dart';
 
 class UploadPage extends StatefulWidget {
@@ -9,6 +10,19 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
+  final textcontroller = TextEditingController();
+  String GameString= "";
+  String cleanPGN(String pgn) {
+    return pgn
+    // Remove invisible or non-breaking spaces
+        .replaceAll(RegExp(r'[\u200B-\u200D\uFEFF\u00A0]'), '')
+    // Remove comments in braces { ... }
+        .replaceAll(RegExp(r'\{[^}]*\}'), '')
+    // Remove ellipses
+        .replaceAll('..', '')
+    // Trim leading/trailing spaces
+        .trim();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,9 +51,15 @@ class _UploadPageState extends State<UploadPage> {
           Text("Input PGN or FEN", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
           Text("Paste Chess Notation Below", style: TextStyle(fontSize: 18),),
           SizedBox(
-              width: 300,
 
-              child: TextField(minLines: 5,maxLines: 5,
+              width: 300,
+              child: TextField(
+                onChanged:(str){
+                  GameString = str;
+                },
+                controller: textcontroller,
+                minLines: 5,
+                maxLines: 5,
                 decoration: InputDecoration(
                   filled: true, fillColor: Color(0xff2c2c2c)
                 ),
@@ -49,12 +69,10 @@ class _UploadPageState extends State<UploadPage> {
           SizedBox(height: 50,),
           ElevatedButton
             (onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (_)=>ViewGamePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
           },
               child: Text("Analyze"),
-
         )
-
         ]
       ),
     );
