@@ -32,6 +32,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
               children: [
               ElevatedButton(onPressed: ()=>Navigator.pop(context), child: Text("No")),
               ElevatedButton(onPressed: (){
+                controller.resetBoard();
                 Navigator.pop(context);
                 Navigator.push(context,MaterialPageRoute(builder: (_)=>
                 ViewGamePage(gameString: widget.gameString, controller: controller))
@@ -39,7 +40,13 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
               }, child: Text("Yes"))
             ],
             ),
-            Text(widget.gameString)
+            Expanded(
+              child: ListView(
+                children: [
+                  Text(widget.gameString),
+                ],
+              ),
+            )
           ],
         ),
       ),
