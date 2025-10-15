@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
-
 
 class ViewGamePage extends StatefulWidget {
   final String gameString;
@@ -15,12 +12,12 @@ class ViewGamePage extends StatefulWidget {
 }
 
 class _ViewGamePageState extends State<ViewGamePage> {
+
   late final controller = widget.controller;
 
-  List<List<String>> moves = [];
-  List<List<String>> fenHistory = [];
-  int currentTurn = 0;
-  int color = 0;
+  List<String> moves = [];
+  List<String> fenHistory = [];
+  int currentMove = 0;
 
   void extractMovesFromPGN(String pgn){
     final chessPackage = chess.Chess();
@@ -37,49 +34,41 @@ class _ViewGamePageState extends State<ViewGamePage> {
     for (String? move in history) {
       if(move != null){
         final info = move.split(" ");
-        moves.add(info.sublist(1));
-        fenHistory.add(["", ""]);
+        final currMoves = info.sublist(1);
+        moves.addAll(currMoves);
+        fenHistory.addAll(List.filled(currMoves.length, ""));
       }
     }
 
     print(moves);
+    print(fenHistory);
   }
 
   void performNextMove(){
-    if (currentTurn < moves.length - 1 || (currentTurn == moves.length - 1 && color < moves[currentTurn].length)){
-      fenHistory[currentTurn][color] = controller.getFen(); // Get current position before
-      controller.makeMoveWithNormalNotation(moves[currentTurn][color]);
+    if (currentMove < moves.length){
+      fenHistory[currentMove] = controller.getFen(); // Get current position before
+      controller.makeMoveWithNormalNotation(moves[currentMove]);
 
-      if(color == 1 && currentTurn < moves.length){
-        color = 0;
-        currentTurn += 1;
-      } else {
-        color = 1;
-      }
+      setState(() {
+        currentMove += 1;
+      });
 
-      //print("here $fenHistory");
     } else {
       print("End of game.");
     }
   }
 
   void undoMove(){
-    if(color == 0 && currentTurn > 0){
-      color = 1;
-      currentTurn -= 1;
-    } else {
-      color = 0;
-    }
-
-    if(currentTurn != -1){
-      print("Turn: $currentTurn, Color: $color");
-
-
-      print(fenHistory[currentTurn][color]);
-      controller.loadFen(fenHistory[currentTurn][color]);
+    if(currentMove > 0){
+      setState(() {
+        currentMove -= 1;
+      });
     } else {
       print("Beginning of game.");
+      return;
     }
+
+    controller.loadFen(fenHistory[currentMove]);
   }
 
   @override
@@ -110,11 +99,24 @@ class _ViewGamePageState extends State<ViewGamePage> {
               ),
             ),
             Expanded(
-              child: ListView(
-                children: [
-                  Text(widget.gameString)
-                ],
-              ),
+              child: RichText(
+                text: TextSpan(
+                  children: moves.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final move = entry.value;
+
+                    final turnNumber = (index ~/ 2) + 1;
+
+                    return TextSpan(
+                      text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
+                      style: TextStyle(
+                        color: index == currentMove - 1 ? Colors.green : Colors.white,
+                        fontWeight: index == currentMove - 1 ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    );
+                  }).toList(),
+                )
+              )
             ),
             SizedBox(height: 20,)
           ],
@@ -128,5 +130,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
 
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
