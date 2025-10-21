@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
+import 'package:stockfish/stockfish.dart';
 
 class ViewGamePage extends StatefulWidget {
   final String gameString;
@@ -12,7 +13,8 @@ class ViewGamePage extends StatefulWidget {
 }
 
 class _ViewGamePageState extends State<ViewGamePage> {
-
+  final stockfish = Stockfish();
+  String bestMove = "...";
   late final controller = widget.controller;
 
   List<String> moves = [];
@@ -46,8 +48,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
 
   void performNextMove(){
     if (currentMove < moves.length){
-      fenHistory[currentMove] = controller.getFen(); // Get current position before
+      String currentFen = controller.getFen();
+      fenHistory[currentMove] = currentFen; // Get current position before
       controller.makeMoveWithNormalNotation(moves[currentMove]);
+
+      // update stockfish
+      stockfish.stdin = 'position fen $currentFen';
+      stockfish.stdin = 'go movetime 1000';
 
       setState(() {
         currentMove += 1;
@@ -61,6 +68,9 @@ class _ViewGamePageState extends State<ViewGamePage> {
   void undoMove(){
     if(currentMove > 0){
       setState(() {
+        // update stockfish
+        stockfish.stdin = 'position fen ${controller.getFen()}';
+        stockfish.stdin = 'go movetime 1000';
         currentMove -= 1;
       });
     } else {
@@ -71,11 +81,34 @@ class _ViewGamePageState extends State<ViewGamePage> {
     controller.loadFen(fenHistory[currentMove]);
   }
 
+  Future<void> initializeStockfish() async {
+    // Wait for stockfish to finish loading
+    while (stockfish.state.value != StockfishState.ready){
+      await Future.delayed(const Duration(milliseconds: 1000));
+      print(stockfish.state.value);
+    }
+
+    stockfish.stdout.listen((event) {
+      print(event);
+      if(event.startsWith('bestmove')) {
+        final move = event.split(" ")[1];
+        setState(() {
+          bestMove = move;
+        });
+      }
+    });
+
+    // Then send commands to setup first move
+    stockfish.stdin = 'isready';
+    stockfish.stdin = 'position startpos';
+    stockfish.stdin = 'go movetime 1000';
+  }
+
   @override
   void initState() {
     super.initState();
     extractMovesFromPGN(widget.gameString);
-    print(moves);
+    initializeStockfish();
   }
 
   @override
@@ -118,7 +151,9 @@ class _ViewGamePageState extends State<ViewGamePage> {
                 )
               )
             ),
-            SizedBox(height: 20,)
+            SizedBox(height: 20,),
+            Text("Next best move: $bestMove"),
+            SizedBox(height: 50,)
           ],
         ),
       ),
@@ -135,5 +170,6 @@ class _ViewGamePageState extends State<ViewGamePage> {
   @override
   void dispose() {
     super.dispose();
+    stockfish.dispose();
   }
 }
