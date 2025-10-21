@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
+import 'package:stockfish/stockfish.dart';
 
 class ViewGamePage extends StatefulWidget {
   final String gameString;
@@ -12,6 +13,10 @@ class ViewGamePage extends StatefulWidget {
 
 class _ViewGamePageState extends State<ViewGamePage> {
   late final controller = widget.controller;
+  final stockfish = Stockfish();
+  String BestMove = "";
+  bool isLoading = true;
+
   List<String> Moves = [];
   List<String> History = [];
   int currentMove = 0;
@@ -40,6 +45,8 @@ class _ViewGamePageState extends State<ViewGamePage> {
       setState(() {
         currentMove += 1;
       });
+      stockfish.stdin = 'position fen ${controller.getFen()}';
+      stockfish.stdin = 'go movetime 1000';
     }
   }
   void undoMove(){
@@ -48,12 +55,40 @@ class _ViewGamePageState extends State<ViewGamePage> {
         currentMove -= 1;
       });
       controller.loadFen(History[currentMove]);
+      stockfish.stdin = 'position fen ${controller.getFen()}';
+      stockfish.stdin = 'go movetime 1000';
     }
+  }
+  Future<void> initializestockfish()async{
+    while(stockfish.state.value != StockfishState.ready){
+      await Future.delayed(Duration(milliseconds: 100));
+      print(stockfish.state.value);
+    }
+    stockfish.stdout.listen((event){
+      print(event);
+      if(event.startsWith("bestmove")){
+        final moves = event.split(" ");
+        final best = moves[1];
+        setState(() {
+          BestMove = best;
+          isLoading = false;
+        });
+      }
+      else{
+        setState(() {
+          isLoading = true;
+        });
+      }
+    });
+    stockfish.stdin = 'isready';
+    stockfish.stdin = 'position startpos';
+    stockfish.stdin = 'go movetime 1000';
   }
   @override
   void initState(){
     super.initState();
     extractMovesFromPGN(widget.gameString);
+    initializestockfish();
   }
   @override
   Widget build(BuildContext context) {
@@ -90,6 +125,11 @@ class _ViewGamePageState extends State<ViewGamePage> {
                     )
                 )
             ),
+          Text("Best Move:$BestMove"),
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: (isLoading)?SizedBox(height: 50, child: CircularProgressIndicator()):SizedBox())
           ],
         ),
       ),
@@ -101,5 +141,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
 
       ),
     );
+  }
+  @override
+  void dispose(){
+    super.dispose();
+    stockfish.dispose();
   }
 }
