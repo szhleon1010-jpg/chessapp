@@ -1,3 +1,4 @@
+import 'package:chessapp/widgets/eval%20bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
@@ -20,8 +21,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
 
   List<String> Moves = [];
   List<String> History = [];
-  List<String> BestLines = [];
+ // List<String> BestLines = [];
   int currentMove = 0;
+  int score = 0;
+  bool mate = false;
   void  extractMovesFromPGN(String PGN){
     final chesspackage = chess.Chess();
     final success = chesspackage.load_pgn(PGN);
@@ -53,7 +56,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
       if (calculate) {
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 8';
+        stockfish.stdin = 'go depth 16';
       }
     }
   
@@ -69,7 +72,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
     }
     stockfish.stdin = 'position fen ${controller.getFen()}';
-    stockfish.stdin = 'go depth 8';
+    stockfish.stdin = 'go depth 16';
     setState(() {
       currentMove = index + 1 ;
     });
@@ -81,7 +84,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       });
       controller.loadFen(History[currentMove]);
       stockfish.stdin = 'position fen ${controller.getFen()}';
-      stockfish.stdin = 'go depth 8';
+      stockfish.stdin = 'go depth 16';
     }
   }
   Future<void> initializestockfish()async{
@@ -90,7 +93,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       print(stockfish.state.value);
     }
     stockfish.stdout.listen((event){
-      print(event);
+
       if(event.startsWith("bestmove")){
         final moves = event.split(" ");
         final best = moves[1];
@@ -99,21 +102,31 @@ class _ViewGamePageState extends State<ViewGamePage> {
           isLoading = false;
         });
       }
-      else if(event.startsWith("info depth 8")){
-        final lineString = event.substring(event.indexOf(' pv')+4);
-        BestLines.add(lineString);
+      else if(event.startsWith("info depth 16")) {
+        print(event);
+        //final lineString = event.substring(event.indexOf(' pv')+4);
+        final scoreString = event.substring(
+            event.indexOf('cp') + 3, event.indexOf(' nodes'));
+        if (scoreString.startsWith("mate")) {
+          mate = true;
+          score = int.parse(scoreString.substring(5));
+        }
+        else {
+          score = int.parse(scoreString);
+          //BestLines.add(lineString);
+        }
       }
       else{
         setState(() {
           isLoading = true;
-          BestLines = [];
+          //BestLines = [];
         });
       }
     });
     stockfish.stdin = 'isready';
     stockfish.stdin = 'position startpos';
-    stockfish.stdin = 'setoption name MultiPV value 3';
-    stockfish.stdin = 'go depth 8';
+    //stockfish.stdin = 'setoption name MultiPV value 3';
+    stockfish.stdin = 'go depth 16';
   }
   @override
   void initState(){
@@ -121,8 +134,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
     extractMovesFromPGN(widget.gameString);
     initializestockfish();
     controller.addListener((){
-      stockfish.stdin = 'position fen ${controller.getFen()}';
-      stockfish.stdin = 'go depth 8';
+      if(!isLoading){
+        stockfish.stdin = 'position fen ${controller.getFen()}';
+        stockfish.stdin = 'go depth 16';
+      }
     });
   }
   @override
@@ -132,7 +147,15 @@ class _ViewGamePageState extends State<ViewGamePage> {
       body: Center(
         child: Column(
           children: [
-            chess.ChessBoard(controller: widget.controller),
+            SizedBox(
+              height: 380,
+              child: Row(
+                children: [
+                  EvalBar(score: score, mate: mate,),
+                  chess.ChessBoard(controller: widget.controller),
+                ],
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -166,10 +189,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
             height: 80,
             child: (!isLoading)?Column(
               children: [
-                Text(BestLines[0]),
-                Text(BestLines[1]),
-                Text(BestLines[2]),
-              ],
+              //   Text(BestLines[0]),
+              //   Text(BestLines[1]),
+              //   Text(BestLines[2]),
+               ],
             ):SizedBox(),
           ),
           Text("Best Move:$BestMove"),
