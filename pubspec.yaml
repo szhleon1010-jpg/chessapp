@@ -38,6 +38,7 @@ dependencies:
   dart_openai: ^5.1.0
   flutter_chess_board: ^1.0.1
   stockfish: ^1.7.1
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:

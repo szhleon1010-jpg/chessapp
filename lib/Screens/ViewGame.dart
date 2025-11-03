@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:chessapp/widgets/eval%20bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
+import 'package:http/http.dart' as http;
 import 'package:stockfish/stockfish.dart';
 
 class ViewGamePage extends StatefulWidget {
@@ -43,10 +46,25 @@ class _ViewGamePageState extends State<ViewGamePage> {
     History.add("");
     print(Moves);
   }
+  Future <void> getopening()async {
+    final FENBoard = controller.getFen();
+    final encodeFen = Uri.encodeFull(FENBoard);
+    final URL = Uri.parse("https://explorer.lichess.ovh/masters?fen=$encodeFen");
+    final response = await http.get(URL);
+    if(response.statusCode!= 200){
+      throw Exception("Failed to get opening");
+    }
+    final Opening = json.decode(response.body)["opening"]["name"];
+  }
+
   void doNextMove(bool calculate) {
     if (currentMove < Moves.length) {
+      setState(() {
+        isLoading = true;
+      });
       final FENBoard = controller.getFen();
       History[currentMove] = FENBoard;
+
       controller.makeMoveWithNormalNotation(Moves[currentMove]);
       setState(() {
         currentMove += 1;
@@ -56,7 +74,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
       if (calculate) {
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 16';
+        stockfish.stdin = 'go depth 20';
       }
     }
   
@@ -72,7 +90,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
     }
     stockfish.stdin = 'position fen ${controller.getFen()}';
-    stockfish.stdin = 'go depth 16';
+    stockfish.stdin = 'go depth 20';
     setState(() {
       currentMove = index + 1 ;
     });
@@ -84,7 +102,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       });
       controller.loadFen(History[currentMove]);
       stockfish.stdin = 'position fen ${controller.getFen()}';
-      stockfish.stdin = 'go depth 16';
+      stockfish.stdin = 'go depth 20';
     }
   }
   Future<void> initializestockfish()async{
@@ -93,7 +111,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       print(stockfish.state.value);
     }
     stockfish.stdout.listen((event){
-
+      print(event);
       if(event.startsWith("bestmove")){
         final moves = event.split(" ");
         final best = moves[1];
@@ -102,18 +120,23 @@ class _ViewGamePageState extends State<ViewGamePage> {
           isLoading = false;
         });
       }
-      else if(event.startsWith("info depth 16")) {
-        print(event);
-        //final lineString = event.substring(event.indexOf(' pv')+4);
-        final scoreString = event.substring(
-            event.indexOf('cp') + 3, event.indexOf(' nodes'));
-        if (scoreString.startsWith("mate")) {
-          mate = true;
-          score = int.parse(scoreString.substring(5));
-        }
-        else {
-          score = int.parse(scoreString);
-          //BestLines.add(lineString);
+      else if(event.startsWith("info depth")) {
+        int depth = int.parse(event.substring(11, event.indexOf(' seldepth')));
+        if(depth >= 14){
+          //final lineString = event.substring(event.indexOf(' pv')+4);
+          final scoreString = event.substring(
+              event.indexOf('cp') + 3, event.indexOf(' nodes'));
+          if (scoreString.startsWith("mate")) {
+            mate = true;
+            score = int.parse(scoreString.substring(5));
+          }
+          else {
+            score = int.parse(scoreString);
+            //BestLines.add(lineString);
+          }
+          setState(() {
+
+          });
         }
       }
       else{
@@ -126,7 +149,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     stockfish.stdin = 'isready';
     stockfish.stdin = 'position startpos';
     //stockfish.stdin = 'setoption name MultiPV value 3';
-    stockfish.stdin = 'go depth 16';
+    stockfish.stdin = 'go depth 20';
   }
   @override
   void initState(){
@@ -136,7 +159,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     controller.addListener((){
       if(!isLoading){
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 16';
+        stockfish.stdin = 'go depth 20';
       }
     });
   }

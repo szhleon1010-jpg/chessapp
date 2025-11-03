@@ -16,6 +16,8 @@ class EvalBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool whiteWinning = score > 0;
+
     return Container(
       width: 30,
       child: Stack(
@@ -30,6 +32,16 @@ class EvalBar extends StatelessWidget {
               heightFactor: _normalizeScore(score),
                 child: Container(color: Colors.white,)
             )
+          ),
+          Positioned(
+            top: (whiteWinning)? null: 2,
+            bottom: (whiteWinning)? 2: null,
+              child: Center(
+                  child: Text(
+                    (score/100).toString(),
+                    style: TextStyle(fontSize: 12, color: (whiteWinning)? Colors.black:Colors.white),
+                  )
+              )
           )
         ],
       ),
