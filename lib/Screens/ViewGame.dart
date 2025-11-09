@@ -21,8 +21,9 @@ class _ViewGamePageState extends State<ViewGamePage> {
   final stockfish = Stockfish();
   String BestMove = "";
   bool isLoading = true;
-
   List<String> Moves = [];
+  String Opening = "Starting Position";
+
   List<String> History = [];
  // List<String> BestLines = [];
   int currentMove = 0;
@@ -54,7 +55,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
     if(response.statusCode!= 200){
       throw Exception("Failed to get opening");
     }
-    final Opening = json.decode(response.body)["opening"]["name"];
+    final data = json.decode(response.body);
+    final opening = data["opening"];
+    setState(() {
+      if(opening != null){
+        Opening = opening["name"];
+      }
+    });
   }
 
   void doNextMove(bool calculate) {
@@ -74,7 +81,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
       if (calculate) {
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 20';
+        stockfish.stdin = 'go depth 18';
       }
     }
   
@@ -90,7 +97,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
     }
     stockfish.stdin = 'position fen ${controller.getFen()}';
-    stockfish.stdin = 'go depth 20';
+    stockfish.stdin = 'go depth 18';
     setState(() {
       currentMove = index + 1 ;
     });
@@ -102,7 +109,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       });
       controller.loadFen(History[currentMove]);
       stockfish.stdin = 'position fen ${controller.getFen()}';
-      stockfish.stdin = 'go depth 20';
+      stockfish.stdin = 'go depth 18';
     }
   }
   Future<void> initializestockfish()async{
@@ -115,6 +122,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       if(event.startsWith("bestmove")){
         final moves = event.split(" ");
         final best = moves[1];
+        getopening();
         setState(() {
           BestMove = best;
           isLoading = false;
@@ -149,7 +157,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     stockfish.stdin = 'isready';
     stockfish.stdin = 'position startpos';
     //stockfish.stdin = 'setoption name MultiPV value 3';
-    stockfish.stdin = 'go depth 20';
+    stockfish.stdin = 'go depth 18';
   }
   @override
   void initState(){
@@ -159,7 +167,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     controller.addListener((){
       if(!isLoading){
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 20';
+        stockfish.stdin = 'go depth 18';
       }
     });
   }
@@ -182,6 +190,9 @@ class _ViewGamePageState extends State<ViewGamePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                SizedBox(
+                    width: 150,
+                    child: Text(Opening, style: TextStyle(color: Colors.white),)),
                 ElevatedButton(onPressed: ()=>undoMove(), child: Icon(Icons.arrow_circle_left, size: 30,)),
                 ElevatedButton(onPressed: ()=> doNextMove(true), child: Icon(Icons.arrow_circle_right, size: 30,))
               ],
