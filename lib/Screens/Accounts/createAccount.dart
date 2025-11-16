@@ -88,7 +88,7 @@ class _CreateAccountState extends State<CreateAccount> {
           ElevatedButton
             (onPressed: (){
               createaccount();
-              Navigator.pop(context);
+              // Navigator.pop(context);
 
           },
             child: Text("Confirm Info"),style: ElevatedButton.styleFrom(

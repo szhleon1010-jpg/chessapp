@@ -1,4 +1,4 @@
-import 'package:chessapp/Screens/SavedGAmePage.dart' show AnalyzePage;
+import 'package:chessapp/Screens/SavedGamePage.dart' show AnalyzePage;
 import 'package:chessapp/Screens/Analyzepage.dart' show UploadPage;
 import 'package:flutter/material.dart';
 

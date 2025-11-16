@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chessapp/Services/Firebase_utils.dart';
 import 'package:chessapp/widgets/eval%20bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -242,6 +243,11 @@ class _ViewGamePageState extends State<ViewGamePage> {
         foregroundColor: Colors.white,
         backgroundColor: Color(0xff171515),
         title: Text("View Game"),
+        actions: [
+          IconButton(onPressed: (){
+            FirebaseUtils.AddGame(widget.gameString, "bob", 1200, 1200, "jim");
+          }, icon: Icon(Icons.save_alt_rounded))
+        ],
 
       ),
     );

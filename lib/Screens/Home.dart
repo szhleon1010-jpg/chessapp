@@ -1,5 +1,5 @@
 import 'package:chessapp/Screens/Accounts/createAccount.dart';
-import 'package:chessapp/Screens/SavedGAmePage.dart';
+import 'package:chessapp/Screens/SavedGamePage.dart';
 import 'package:chessapp/Screens/ProfilePage.dart';
 import 'package:chessapp/Screens/Analyzepage.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> screens = [
     UploadPage(),
-    CreateAccount(),
+    SaveGamePage(),
     ProfilePage()
   ];
   List<String> titles = [

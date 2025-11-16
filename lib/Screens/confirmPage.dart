@@ -55,7 +55,6 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
         foregroundColor: Colors.white,
         backgroundColor: Color(0xff171515),
         title: Text("Confirm Game?"),
-
       ),
     );
   }
