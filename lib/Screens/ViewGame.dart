@@ -24,7 +24,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
   bool isLoading = true;
   List<String> Moves = [];
   String Opening = "Starting Position";
-
+  List<chess.BoardArrow> bestMoveArrow = [];
   List<String> History = [];
  // List<String> BestLines = [];
   int currentMove = 0;
@@ -82,7 +82,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
       if (calculate) {
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 18';
+        stockfish.stdin = 'go depth 10';
       }
     }
   
@@ -98,7 +98,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
     }
     stockfish.stdin = 'position fen ${controller.getFen()}';
-    stockfish.stdin = 'go depth 18';
+    stockfish.stdin = 'go depth 10';
     setState(() {
       currentMove = index + 1 ;
     });
@@ -110,7 +110,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       });
       controller.loadFen(History[currentMove]);
       stockfish.stdin = 'position fen ${controller.getFen()}';
-      stockfish.stdin = 'go depth 18';
+      stockfish.stdin = 'go depth 10';
     }
   }
   Future<void> initializestockfish()async{
@@ -123,8 +123,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
       if(event.startsWith("bestmove")){
         final moves = event.split(" ");
         final best = moves[1];
+        final fromPiece = best.substring(0,2);
+        final toPiece = best.substring(2,4);
         getopening();
         setState(() {
+          bestMoveArrow.clear();
+          bestMoveArrow.add(chess.BoardArrow(from: fromPiece, to: toPiece, color: Color(
+              0xffbfc51b)));
           BestMove = best;
           isLoading = false;
         });
@@ -158,7 +163,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     stockfish.stdin = 'isready';
     stockfish.stdin = 'position startpos';
     //stockfish.stdin = 'setoption name MultiPV value 3';
-    stockfish.stdin = 'go depth 18';
+    stockfish.stdin = 'go depth 10';
   }
   @override
   void initState(){
@@ -168,7 +173,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     controller.addListener((){
       if(!isLoading){
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 18';
+        stockfish.stdin = 'go depth 10';
       }
     });
   }
@@ -184,7 +189,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
               child: Row(
                 children: [
                   EvalBar(score: score, mate: mate,),
-                  chess.ChessBoard(controller: widget.controller),
+                  chess.ChessBoard(
+                      controller: widget.controller,
+                      arrows: bestMoveArrow,
+                  ),
                 ],
               ),
             ),
