@@ -13,7 +13,7 @@ class SaveGamePage extends StatefulWidget {
 class _SaveGamePageState extends State<SaveGamePage> {
   List<Map<String,dynamic>> games = [];
   Future<void> loadGames() async{
-    final loadedGames = await FirebaseUtils.fetchAllGames();
+    final loadedGames = await FirebaseUtils.fetchUserGames();
     setState(() {
       games = loadedGames;
     });
@@ -30,9 +30,9 @@ class _SaveGamePageState extends State<SaveGamePage> {
       children: [
         Expanded(
             child:(games.isEmpty)? Center(child: CircularProgressIndicator(),):
-                  ListView.builder(
-                    itemCount: games.length,
-                      itemBuilder: (context, index){
+              ListView.builder(
+                  itemCount: games.length,
+                  itemBuilder: (context, index){
                     final game = games[index];
                     final date = (game["dateCreated"]).toDate();
                     final formatDate = DateFormat("MM/dd/yyyy").format(date);

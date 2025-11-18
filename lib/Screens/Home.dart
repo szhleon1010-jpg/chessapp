@@ -1,3 +1,5 @@
+import 'package:chessapp/Constants.dart';
+import 'package:chessapp/Screens/Accounts/SignInPg.dart';
 import 'package:chessapp/Screens/Accounts/createAccount.dart';
 import 'package:chessapp/Screens/SavedGamePage.dart';
 import 'package:chessapp/Screens/ProfilePage.dart';
@@ -16,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> screens = [
     UploadPage(),
     SaveGamePage(),
-    ProfilePage()
+    SignInPage()
   ];
   List<String> titles = [
     "Analyze New Game",
@@ -42,9 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: selectedScreen,
         onTap: onBarPressed,
       ),
-      backgroundColor: Color(0xff0b0a0a),
+      backgroundColor: Constants.mainBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Color(0xff171515),
+          backgroundColor: Constants.appbarColor,
         title: Text(
           style: TextStyle(
             color: Colors.white

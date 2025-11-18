@@ -1,17 +1,18 @@
-import 'package:chessapp/Constants.dart';
-import 'package:chessapp/Screens/Accounts/SignInPg.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class CreateAccount extends StatefulWidget {
-  const CreateAccount({super.key});
+import '../../Constants.dart';
+import 'createAccount.dart';
+
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
 
   @override
-  State<CreateAccount> createState() => _CreateAccountState();
+  State<SignInPage> createState() => _SignInPageState();
 }
 
-class _CreateAccountState extends State<CreateAccount> {
+class _SignInPageState extends State<SignInPage> {
   final email_controller = TextEditingController();
   final password_controller = TextEditingController();
   final confirming_controller = TextEditingController();
@@ -19,23 +20,21 @@ class _CreateAccountState extends State<CreateAccount> {
     String email = email_controller.text;
     String password = password_controller.text;
     String confirming= confirming_controller.text;
-    FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+    FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Constants.mainBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Constants.appbarColor
-      ),
+      appBar: AppBar(),
       body: Center(
         child: Column(
-          spacing: 16,
+          spacing: 13,
           children: [
             SizedBox(
               height: 45,
             ),
-            Text("Sign Up", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), ),
+            Text("Sign In", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), ),
             SizedBox(
                 width: 300,
                 child: Text("Enter Email")),
@@ -56,31 +55,12 @@ class _CreateAccountState extends State<CreateAccount> {
             ),
             SizedBox(
                 width: 300,
-                child: Text("Create Password")),
+                child: Text("Enter Password")),
             SizedBox(
                 width: 300,
                 child: TextField(
                   obscureText: true,
                   controller: password_controller,
-                  decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white, width: 3)
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white, width: 2)
-                      ),
-                      filled: true, fillColor: Color(0xffa3a3a3)
-                  ),
-                )
-            ),
-            SizedBox(
-                width: 300,
-                child: Text("Confirm Password")),
-            SizedBox(
-                width: 300,
-                child: TextField(
-                  obscureText: true,
-                  controller: confirming_controller,
                   decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white, width: 3)
@@ -112,11 +92,11 @@ class _CreateAccountState extends State<CreateAccount> {
                         )
                     )
                 ),
-                child: Text("Already have an account?", style: TextStyle(
+                child: Text("Don't have an account?", style: TextStyle(
                     color: Color(0xff575757) ))),
             GestureDetector(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (_)=> SignInPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (_)=> CreateAccount()));
               },
               child: Container(
                   decoration: BoxDecoration(
@@ -132,6 +112,5 @@ class _CreateAccountState extends State<CreateAccount> {
         ),
       ),
     );
-
   }
 }

@@ -32,4 +32,17 @@ class FirebaseUtils {
       throw Exception("Error fetching game from Firestore: $e");
     }
   }
+  static Future<List<Map<String,dynamic>>> fetchUserGames() async{
+    final CollectionReference gamesREF = FirebaseFirestore.instance.collection("games");
+    final Userid = FirebaseAuth.instance.currentUser!.uid;
+    try{
+      QuerySnapshot snapshot = await gamesREF.where("user_id", isEqualTo: Userid).get();
+      List<Map<String, dynamic>> allUserData = snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+      return allUserData;
+    }catch(e) {
+      throw Exception("Error fetching game from Firestore: $e");
+    }
+  }
 }

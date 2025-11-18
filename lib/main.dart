@@ -1,3 +1,4 @@
+import 'package:chessapp/Constants.dart';
 import 'package:chessapp/Screens/Home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,12 @@ class MyApp extends StatelessWidget {
             color:Colors.white
           )
         ),
-
+        appBarTheme: AppBarTheme(
+          backgroundColor: Constants.appbarColor,
+          iconTheme: IconThemeData(
+            color: Colors.white
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black38),
       ),
       home: HomeScreen(
