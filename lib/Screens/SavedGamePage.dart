@@ -15,7 +15,12 @@ class _SaveGamePageState extends State<SaveGamePage> {
   Future<void> loadGames() async{
     final loadedGames = await FirebaseUtils.fetchUserGames();
     setState(() {
-      games = loadedGames;
+      if(loadedGames == null){
+        games = [];
+      }
+      else{
+        games = loadedGames;
+      }
     });
     return ;
   }

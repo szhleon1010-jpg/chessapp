@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chessapp/Services/Firebase_utils.dart';
 import 'package:chessapp/widgets/eval%20bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
@@ -20,12 +21,109 @@ class ViewGamePage extends StatefulWidget {
 class _ViewGamePageState extends State<ViewGamePage> {
   late final controller = widget.controller;
   final stockfish = Stockfish();
+
+  //settings
+  int depth = 10;
+  bool showLines = false;
+  bool enableArrows = false;
+  chess.BoardColor boardColor = chess.BoardColor.brown;
+  chess.PlayerColor SwitchSide = chess.PlayerColor.white;
+
+  void openSettingBox (){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text("Board Settings"),
+            backgroundColor: Color(0xff393838),
+            content: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Depth"),
+                    DropdownButton <int> (
+                        value: depth ,
+                        dropdownColor: Color(0xff393838),
+                        items:
+                        List.generate(26, (num){
+                          return DropdownMenuItem(child: Text((num + 5).toString()),value: num + 5,);
+                        })
+                        , onChanged: (int? value){
+                    })
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Board Color"),
+                    DropdownButton <chess.BoardColor> (
+                        value: boardColor ,
+                        dropdownColor: Color(0xff393838),
+                        items:
+                        [
+                          DropdownMenuItem(child: Text("Brown",),value: chess.BoardColor.brown,),
+                          DropdownMenuItem(child: Text("Dark brown",),value: chess.BoardColor.darkBrown,),
+                          DropdownMenuItem(child: Text("Green",),value: chess.BoardColor.green,),
+                          DropdownMenuItem(child: Text("Orange",),value: chess.BoardColor.orange,)
+                        ]
+                        , onChanged: (chess.BoardColor? value){
+                    })
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Player Color"),
+                    DropdownButton <chess.PlayerColor> (
+                        value: SwitchSide ,
+                        dropdownColor: Color(0xff393838),
+                        items:
+                        [
+                          DropdownMenuItem(child: Text("White",),value: chess.PlayerColor.white,),
+                          DropdownMenuItem(child: Text("Black",),value: chess.PlayerColor.black),
+
+                        ]
+                        , onChanged: (chess.PlayerColor? value){
+                    })
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Show Lines"),
+                    CupertinoSwitch(value: showLines, onChanged: (bool value){
+                      setState(() {
+                        showLines = value;
+                      });
+                    })
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Show Arrows"),
+                    CupertinoSwitch(value: enableArrows, onChanged: (bool value){
+                      setState(() {
+                        enableArrows = value;
+                      });
+                    })
+                  ],
+                )
+              ],
+            ),
+          );
+        }
+    );
+  }
+
   String BestMove = "";
   bool isLoading = true;
   List<String> Moves = [];
   String Opening = "Starting Position";
   List<chess.BoardArrow> bestMoveArrow = [];
   List<String> History = [];
+
  // List<String> BestLines = [];
   int currentMove = 0;
   int score = 0;
@@ -252,6 +350,9 @@ class _ViewGamePageState extends State<ViewGamePage> {
         backgroundColor: Color(0xff171515),
         title: Text("View Game"),
         actions: [
+          IconButton(onPressed: (){
+            openSettingBox();
+          }, icon: Icon(Icons.settings)),
           IconButton(onPressed: (){
             FirebaseUtils.AddGame(widget.gameString, "bob", 1200, 1200, "jim");
           }, icon: Icon(Icons.save_alt_rounded))
