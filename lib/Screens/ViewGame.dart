@@ -24,97 +24,114 @@ class _ViewGamePageState extends State<ViewGamePage> {
 
   //settings
   int depth = 10;
-  bool showLines = false;
-  bool enableArrows = false;
+  bool showLines = true;
+  bool enableArrows = true;
   chess.BoardColor boardColor = chess.BoardColor.brown;
   chess.PlayerColor SwitchSide = chess.PlayerColor.white;
 
-  void openSettingBox (){
-    showDialog(
+  void openSettingBox ()async{
+    await showDialog(
         context: context,
         builder: (context){
           return AlertDialog(
             title: Text("Board Settings"),
             backgroundColor: Color(0xff393838),
-            content: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            content: StatefulBuilder(
+              builder: (context, StateSetter setState){
+                return Column(
                   children: [
-                    Text("Depth"),
-                    DropdownButton <int> (
-                        value: depth ,
-                        dropdownColor: Color(0xff393838),
-                        items:
-                        List.generate(26, (num){
-                          return DropdownMenuItem(child: Text((num + 5).toString()),value: num + 5,);
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Depth"),
+                        DropdownButton <int> (
+                            value: depth ,
+                            dropdownColor: Color(0xff393838),
+                            items:
+                            List.generate(26, (num){
+                              return DropdownMenuItem(child: Text((num + 5).toString()),value: num + 5,);
+                            })
+                            , onChanged: (int? value){
+                          setState(() {
+                            depth = value!;
+                          });
                         })
-                        , onChanged: (int? value){
-                    })
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Board Color"),
-                    DropdownButton <chess.BoardColor> (
-                        value: boardColor ,
-                        dropdownColor: Color(0xff393838),
-                        items:
-                        [
-                          DropdownMenuItem(child: Text("Brown",),value: chess.BoardColor.brown,),
-                          DropdownMenuItem(child: Text("Dark brown",),value: chess.BoardColor.darkBrown,),
-                          DropdownMenuItem(child: Text("Green",),value: chess.BoardColor.green,),
-                          DropdownMenuItem(child: Text("Orange",),value: chess.BoardColor.orange,)
-                        ]
-                        , onChanged: (chess.BoardColor? value){
-                    })
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Player Color"),
-                    DropdownButton <chess.PlayerColor> (
-                        value: SwitchSide ,
-                        dropdownColor: Color(0xff393838),
-                        items:
-                        [
-                          DropdownMenuItem(child: Text("White",),value: chess.PlayerColor.white,),
-                          DropdownMenuItem(child: Text("Black",),value: chess.PlayerColor.black),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Board Color"),
+                        DropdownButton <chess.BoardColor> (
+                            value: boardColor ,
+                            dropdownColor: Color(0xff393838),
+                            items:
+                            [
+                              DropdownMenuItem(child: Text("Brown",),value: chess.BoardColor.brown,),
+                              DropdownMenuItem(child: Text("Dark brown",),value: chess.BoardColor.darkBrown,),
+                              DropdownMenuItem(child: Text("Green",),value: chess.BoardColor.green,),
+                              DropdownMenuItem(child: Text("Orange",),value: chess.BoardColor.orange,)
+                            ]
+                            , onChanged: (chess.BoardColor? value){
+                          setState(() {
+                            boardColor = value!;
+                          });
+                        })
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Player Color"),
+                        DropdownButton <chess.PlayerColor> (
+                            value: SwitchSide ,
+                            dropdownColor: Color(0xff393838),
+                            items:
+                            [
+                              DropdownMenuItem(child: Text("White",),value: chess.PlayerColor.white,),
+                              DropdownMenuItem(child: Text("Black",),value: chess.PlayerColor.black),
 
-                        ]
-                        , onChanged: (chess.PlayerColor? value){
-                    })
+                            ]
+                            , onChanged: (chess.PlayerColor? value){
+                          setState(() {
+                            SwitchSide = value!;
+                          });
+                        })
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Show Lines"),
+                        CupertinoSwitch(value: showLines, onChanged: (bool value){
+                          setState(() {
+                            showLines = value;
+                          });
+                        })
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Show Arrows"),
+                        CupertinoSwitch(value: enableArrows, onChanged: (bool value){
+                          setState(() {
+                            enableArrows = value;
+                          });
+                        })
+                      ],
+                    )
                   ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Show Lines"),
-                    CupertinoSwitch(value: showLines, onChanged: (bool value){
-                      setState(() {
-                        showLines = value;
-                      });
-                    })
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Show Arrows"),
-                    CupertinoSwitch(value: enableArrows, onChanged: (bool value){
-                      setState(() {
-                        enableArrows = value;
-                      });
-                    })
-                  ],
-                )
-              ],
+                );
+              }
             ),
           );
         }
-    );
+    ).then((dynamic result){
+      setState(() {
+
+      });
+    });
   }
 
   String BestMove = "";
@@ -124,7 +141,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
   List<chess.BoardArrow> bestMoveArrow = [];
   List<String> History = [];
 
- // List<String> BestLines = [];
+  List<String> BestLines = [];
   int currentMove = 0;
   int score = 0;
   bool mate = false;
@@ -180,7 +197,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
       if (calculate) {
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 10';
+        if (showLines){
+          stockfish.stdin = 'setoption name MultiPV value 3';
+        }
+        else{
+          stockfish.stdin = 'setoption name MultiPV value 1';
+        }
+        stockfish.stdin = 'go depth  $depth';
       }
     }
   
@@ -196,7 +219,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
     }
     stockfish.stdin = 'position fen ${controller.getFen()}';
-    stockfish.stdin = 'go depth 10';
+    if (showLines){
+      stockfish.stdin = 'setoption name MultiPV value 3';
+    }
+    else{
+      stockfish.stdin = 'setoption name MultiPV value 1';
+    }
+    stockfish.stdin = 'go depth $depth';
     setState(() {
       currentMove = index + 1 ;
     });
@@ -208,7 +237,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
       });
       controller.loadFen(History[currentMove]);
       stockfish.stdin = 'position fen ${controller.getFen()}';
-      stockfish.stdin = 'go depth 10';
+      if (showLines){
+        stockfish.stdin = 'setoption name MultiPV value 3';
+      }
+      else{
+        stockfish.stdin = 'setoption name MultiPV value 1';
+      }
+      stockfish.stdin = 'go depth $depth';
     }
   }
   Future<void> initializestockfish()async{
@@ -234,8 +269,8 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
       else if(event.startsWith("info depth")) {
         int depth = int.parse(event.substring(11, event.indexOf(' seldepth')));
-        if(depth >= 14){
-          //final lineString = event.substring(event.indexOf(' pv')+4);
+        if(depth >= 5){
+          final lineString = event.substring(event.indexOf(' pv')+4);
           final scoreString = event.substring(
               event.indexOf('cp') + 3, event.indexOf(' nodes'));
           if (scoreString.startsWith("mate")) {
@@ -244,7 +279,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
           }
           else {
             score = int.parse(scoreString);
-            //BestLines.add(lineString);
+            BestLines.add(lineString);
           }
           setState(() {
 
@@ -254,14 +289,19 @@ class _ViewGamePageState extends State<ViewGamePage> {
       else{
         setState(() {
           isLoading = true;
-          //BestLines = [];
+          BestLines = [];
         });
       }
     });
     stockfish.stdin = 'isready';
     stockfish.stdin = 'position startpos';
-    //stockfish.stdin = 'setoption name MultiPV value 3';
-    stockfish.stdin = 'go depth 10';
+    if (showLines){
+      stockfish.stdin = 'setoption name MultiPV value 3';
+    }
+    else{
+      stockfish.stdin = 'setoption name MultiPV value 1';
+    }
+    stockfish.stdin = 'go depth $depth';
   }
   @override
   void initState(){
@@ -271,14 +311,13 @@ class _ViewGamePageState extends State<ViewGamePage> {
     controller.addListener((){
       if(!isLoading){
         stockfish.stdin = 'position fen ${controller.getFen()}';
-        stockfish.stdin = 'go depth 10';
+        stockfish.stdin = 'go depth $depth';
       }
     });
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Center(
         child: Column(
           children: [
@@ -288,8 +327,10 @@ class _ViewGamePageState extends State<ViewGamePage> {
                 children: [
                   EvalBar(score: score, mate: mate,),
                   chess.ChessBoard(
-                      controller: widget.controller,
-                      arrows: bestMoveArrow,
+                    controller: widget.controller,
+                    arrows: (enableArrows)?bestMoveArrow: [],
+                    boardColor: boardColor,
+                    boardOrientation: SwitchSide,
                   ),
                 ],
               ),
@@ -328,11 +369,11 @@ class _ViewGamePageState extends State<ViewGamePage> {
             ),
             SizedBox(
             height: 80,
-            child: (!isLoading)?Column(
+            child: (!isLoading&&showLines)?Column(
               children: [
-              //   Text(BestLines[0]),
-              //   Text(BestLines[1]),
-              //   Text(BestLines[2]),
+                Text(BestLines[0]),
+                Text(BestLines[1]),
+                Text(BestLines[2]),
                ],
             ):SizedBox(),
           ),
