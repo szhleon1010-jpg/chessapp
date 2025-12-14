@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:chessapp/Screens/ViewGame.dart';
 import 'package:chessapp/Screens/confirmPage.dart';
+import 'package:chessapp/Services/OpenAIprompt.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,6 +21,18 @@ class _UploadPageState extends State<UploadPage> {
   final imagePicker = ImagePicker();
   File? image;
   String GameString= "";
+  void gotoConfirmScreen()async{
+    String test = await OpenAIprompt.test();
+    print(test);
+    // if(image != null){
+    //   final bytes = await image!.readAsBytes();
+    //   String base64image = base64Encode(bytes);
+    //   String PGN = await OpenAIprompt.getPGNfromImage(base64image);
+    //   print(PGN);
+    // } else{
+    //   Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
+    // }
+  }
   String cleanPGN(String pgn) {
     return pgn
     // Remove invisible or non-breaking spaces
@@ -104,7 +118,7 @@ class _UploadPageState extends State<UploadPage> {
               SizedBox(height: 50,),
               ElevatedButton
                 (onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
+                  gotoConfirmScreen();
               },
                   child: Text("Analyze"),
             )
