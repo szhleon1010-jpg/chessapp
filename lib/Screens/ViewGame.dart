@@ -179,6 +179,9 @@ class _ViewGamePageState extends State<ViewGamePage> {
       }
     });
   }
+  void doMoveInLine (String piece, String moveTo){
+    controller.makeMove(from: piece, to: moveTo);
+  }
 
   void doNextMove(bool calculate) {
     if (currentMove < Moves.length) {
@@ -371,6 +374,26 @@ class _ViewGamePageState extends State<ViewGamePage> {
             height: 80,
             child: (!isLoading&&showLines)?Column(
               children: [
+                RichText(
+                  text: TextSpan(
+                    children: BestLines[0].split(" ").asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final move = entry.value;
+
+                      final turnNumber = (index ~/ 2) + 1;
+
+                      return TextSpan(
+                          text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
+                          style: TextStyle(
+                            color: index == currentMove - 1 ? Colors.green : Colors.white,
+                            fontWeight: index == currentMove - 1 ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => doMoveInLine(move.substring(0,2), move.substring(2,4))
+                      );
+                    }).toList(),
+                  )
+              ),
                 Text(BestLines[0]),
                 Text(BestLines[1]),
                 Text(BestLines[2]),

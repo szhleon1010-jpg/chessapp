@@ -22,16 +22,16 @@ class _UploadPageState extends State<UploadPage> {
   File? image;
   String GameString= "";
   void gotoConfirmScreen()async{
-    String test = await OpenAIprompt.test();
-    print(test);
-    // if(image != null){
-    //   final bytes = await image!.readAsBytes();
-    //   String base64image = base64Encode(bytes);
-    //   String PGN = await OpenAIprompt.getPGNfromImage(base64image);
-    //   print(PGN);
-    // } else{
-    //   Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
-    // }
+    // String test = await OpenAIprompt.test();
+    // print(test);
+    if(image != null){
+      final bytes = await image!.readAsBytes();
+      String base64image = base64Encode(bytes);
+      String PGN = await OpenAIprompt.getPGNfromImage(base64image);
+      print(PGN);
+    } else{
+      Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
+    }
   }
   String cleanPGN(String pgn) {
     return pgn
