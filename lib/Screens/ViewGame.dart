@@ -142,6 +142,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
   List<String> History = [];
 
   List<String> BestLines = [];
+  List<String> BestlineScore = [];
   int currentMove = 0;
   int score = 0;
   bool mate = false;
@@ -283,6 +284,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
           else {
             score = int.parse(scoreString);
             BestLines.add(lineString);
+            BestlineScore.add(scoreString);
           }
           setState(() {
 
@@ -293,6 +295,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
         setState(() {
           isLoading = true;
           BestLines = [];
+          BestlineScore = [];
         });
       }
     });
@@ -372,32 +375,86 @@ class _ViewGamePageState extends State<ViewGamePage> {
             ),
             SizedBox(
             height: 80,
-            child: (!isLoading&&showLines)?Column(
-              children: [
-                RichText(
-                  text: TextSpan(
-                    children: BestLines[0].split(" ").asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final move = entry.value;
+            child: (!isLoading&&showLines)?SingleChildScrollView(
+              child: Column(
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: "${ ((int.parse(BestlineScore[0])>0)?"+":"-")}${int.parse(BestlineScore[0]) /100.0} ",
+                      style: TextStyle(
+                          color: ((int.parse(BestlineScore[0])>0)?Colors.black:Colors.white),
+                          backgroundColor: ((int.parse(BestlineScore[0])>0)?Colors.white:Colors.black)
+                      ),
+                      children: BestLines[0].split(" ").asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final move = entry.value;
+              
+                        final turnNumber = (index ~/ 2) + 1;
 
-                      final turnNumber = (index ~/ 2) + 1;
+                        return TextSpan(
+                            text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
+                            style: TextStyle(
+                              color: index == currentMove - 1 ? Colors.green : ((int.parse(BestlineScore[0])>0)?Colors.black:Colors.white),
+                              fontWeight: index == currentMove - 1 ? FontWeight.bold : FontWeight.normal,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => doMoveInLine(move.substring(0,2), move.substring(2,4))
+                        );
+                      }).toList(),
+                    )
+                ),
+                  RichText(
+                      text: TextSpan(
+                        text: "${ ((int.parse(BestlineScore[1])>0)?"+":"-")}${int.parse(BestlineScore[1]) /100.0} ",
+                        style: TextStyle(
+                            color: ((int.parse(BestlineScore[1])>0)?Colors.black:Colors.white),
+                            backgroundColor: ((int.parse(BestlineScore[1])>0)?Colors.white:Colors.black)
+                        ),
+                        children: BestLines[1].split(" ").asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final move = entry.value;
 
-                      return TextSpan(
-                          text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
-                          style: TextStyle(
-                            color: index == currentMove - 1 ? Colors.green : Colors.white,
-                            fontWeight: index == currentMove - 1 ? FontWeight.bold : FontWeight.normal,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => doMoveInLine(move.substring(0,2), move.substring(2,4))
-                      );
-                    }).toList(),
-                  )
+                          final turnNumber = (index ~/ 2) + 1;
+
+                          return TextSpan(
+                              text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
+                              style: TextStyle(
+                                color: index == currentMove - 1 ? Colors.green : ((int.parse(BestlineScore[1])>0)?Colors.black:Colors.white),
+                                fontWeight: index == currentMove - 1 ? FontWeight.bold : FontWeight.normal,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => doMoveInLine(move.substring(0,2), move.substring(2,4))
+                          );
+                        }).toList(),
+                      )
+                  ),
+                  RichText(
+                      text: TextSpan(
+                        text: "${ ((int.parse(BestlineScore[2])>0)?"+":"-")}${int.parse(BestlineScore[2]) /100.0} ",
+                        style: TextStyle(
+                            color: ((int.parse(BestlineScore[2])>0)?Colors.black:Colors.white),
+                            backgroundColor: ((int.parse(BestlineScore[2])>0)?Colors.white:Colors.black)
+                        ),
+                        children: BestLines[2].split(" ").asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final move = entry.value;
+
+                          final turnNumber = (index ~/ 2) + 1;
+
+                          return TextSpan(
+                              text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
+                              style: TextStyle(
+                                color: index == currentMove - 1 ? Colors.green : ((int.parse(BestlineScore[2])>0)?Colors.black:Colors.white),
+                                fontWeight: index == currentMove - 1 ? FontWeight.bold : FontWeight.normal,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => doMoveInLine(move.substring(0,2), move.substring(2,4))
+                          );
+                        }).toList(),
+                      )
+                  ),
+                 ],
               ),
-                Text(BestLines[0]),
-                Text(BestLines[1]),
-                Text(BestLines[2]),
-               ],
             ):SizedBox(),
           ),
           Text("Best Move:$BestMove"),
