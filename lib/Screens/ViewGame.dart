@@ -3,12 +3,24 @@ import 'dart:convert';
 import 'package:chessapp/Services/Firebase_utils.dart';
 import 'package:chessapp/widgets/eval%20bar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
 import 'package:http/http.dart' as http;
 import 'package:stockfish/stockfish.dart';
 
+enum moveGrade{
+  blunder,
+  mistake,
+  inaccuracy,
+  none,
+  book,
+  good,
+  excellent,
+  best,
+  brilliant
+}
 class ViewGamePage extends StatefulWidget {
   final String gameString;
   final chess.ChessBoardController controller;
@@ -146,6 +158,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
   int currentMove = 0;
   int score = 0;
   bool mate = false;
+  moveGrade lastMoveGrade = moveGrade.none;
   void  extractMovesFromPGN(String PGN){
     final chesspackage = chess.Chess();
     final success = chesspackage.load_pgn(PGN);
@@ -275,10 +288,12 @@ class _ViewGamePageState extends State<ViewGamePage> {
         int depth = int.parse(event.substring(11, event.indexOf(' seldepth')));
         if(depth >= 5){
           final lineString = event.substring(event.indexOf(' pv')+4);
+          final beforeScore = score;
           final scoreString = event.substring(
               event.indexOf('cp') + 3, event.indexOf(' nodes'));
           if (scoreString.startsWith("mate")) {
             mate = true;
+
             score = int.parse(scoreString.substring(5));
           }
           else {
@@ -287,7 +302,26 @@ class _ViewGamePageState extends State<ViewGamePage> {
             BestlineScore.add(scoreString);
           }
           setState(() {
-
+            final d = beforeScore - score;
+            if(d > 2){
+              lastMoveGrade = moveGrade.blunder;
+            }
+            else if(d > 1.5){
+              lastMoveGrade = moveGrade.mistake;
+            }
+            else if(d > 0.7){
+              lastMoveGrade = moveGrade.inaccuracy;
+            }
+            else if(d > 0.3){
+              lastMoveGrade = moveGrade.good;
+            }
+            else if(d > 0.01){
+              lastMoveGrade = moveGrade.excellent;
+            }
+            else if(d == 0){
+              lastMoveGrade = moveGrade.best;
+            }
+            //reminder book
           });
         }
       }
@@ -373,6 +407,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
                     )
                 )
             ),
+            Text(lastMoveGrade.toString()),
             SizedBox(
             height: 80,
             child: (!isLoading&&showLines)?SingleChildScrollView(
@@ -438,9 +473,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
                         children: BestLines[2].split(" ").asMap().entries.map((entry) {
                           final index = entry.key;
                           final move = entry.value;
-
                           final turnNumber = (index ~/ 2) + 1;
-
                           return TextSpan(
                               text: "${(index % 2 == 0) ? '$turnNumber.' : ''} $move ",
                               style: TextStyle(
