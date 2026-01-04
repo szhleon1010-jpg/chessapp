@@ -36,6 +36,7 @@ class OpenAIprompt {
                               "event" : "Event name or unknown if not visible." ,
                               "win" : "'1/0' or '0/1' or '1/2 / 1/2' or unknown.",
                             }
+                            Don't include any json formatting like ```json
                         ''' ,
                   },
                   {

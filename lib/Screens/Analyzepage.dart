@@ -28,7 +28,7 @@ class _UploadPageState extends State<UploadPage> {
       final bytes = await image!.readAsBytes();
       String base64image = base64Encode(bytes);
       String PGN = await OpenAIprompt.getPGNfromImage(base64image);
-      print(PGN);
+      Map <String, dynamic> gameData = jsonDecode(PGN);
     } else{
       Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
     }

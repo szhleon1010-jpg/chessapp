@@ -1,3 +1,4 @@
+import 'package:chessapp/Screens/EditGamePage.dart';
 import 'package:chessapp/Screens/ViewGame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
@@ -46,7 +47,8 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                   Text(widget.gameString),
                 ],
               ),
-            )
+            ),
+            ElevatedButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>EditGamePage())), child: Text("Edit game")),
           ],
         ),
       ),
