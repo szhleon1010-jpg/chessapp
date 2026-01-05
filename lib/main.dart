@@ -35,6 +35,12 @@ class MyApp extends StatelessWidget {
             ),
           bodyMedium: TextStyle(
             color:Colors.white
+          ),
+          labelMedium: TextStyle(
+            color: Color(0xffffffff)
+          ),
+          bodyLarge: TextStyle(
+            color: Color(0xffffffff)
           )
         ),
         appBarTheme: AppBarTheme(
@@ -44,6 +50,11 @@ class MyApp extends StatelessWidget {
           ),
         ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black38),
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(
+              color: Colors.white
+          )
+        )
       ),
       home: HomeScreen(
       )

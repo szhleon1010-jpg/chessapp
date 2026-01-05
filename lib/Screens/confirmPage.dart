@@ -13,11 +13,13 @@ class ConfirmGamePage extends StatefulWidget {
 
 class _ConfirmGamePageState extends State<ConfirmGamePage> {
   final controller = chess.ChessBoardController();
+  List <String?> PGNstring = [];
   @override
   void initState(){
     super.initState();
     controller.loadPGN(widget.gameString);
-
+    PGNstring = controller.getSan();
+    print(PGNstring);
   }
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                 ],
               ),
             ),
-            ElevatedButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>EditGamePage())), child: Text("Edit game")),
+            ElevatedButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>EditGamePage(moves: PGNstring,))), child: Text("Edit game")),
           ],
         ),
       ),
