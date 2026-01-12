@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 class EditGamePage extends StatefulWidget {
   final List <String?> moves;
-  const EditGamePage({super.key,required this.moves});
+  final Map <String, dynamic> gameInfo;
+  final Function updateGameInfo;
+  const EditGamePage({super.key,required this.moves, required this.gameInfo, required this.updateGameInfo});
 
   @override
   State<EditGamePage> createState() => _EditGamePageState();
@@ -57,7 +59,7 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextField(),
+                        child: TextFormField(initialValue: widget.gameInfo["white"],),
                       )
                     ],
                   ),
@@ -68,7 +70,7 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextField(),
+                        child: TextFormField(initialValue: widget.gameInfo["black"],),
                       )
                     ],
                   ),
@@ -94,7 +96,7 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextField(),
+                          child: TextFormField(initialValue: widget.gameInfo["event"],),
                       )
                     ],
                   ),
@@ -105,7 +107,7 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextField(),
+                        child: TextFormField(initialValue: widget.gameInfo["location"],),
                       )
                     ],
                   ),
@@ -117,7 +119,9 @@ class _EditGamePageState extends State<EditGamePage> {
             height: 50,
           ),
           ElevatedButton(
-            onPressed: () => {},
+            onPressed: () => widget.updateGameInfo(
+              widget.gameInfo
+            ),
             child: Text("Save"),style: ElevatedButton.styleFrom(
               side: BorderSide(
                   color: Colors.white

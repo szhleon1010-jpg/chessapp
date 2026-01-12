@@ -23,7 +23,19 @@ class ConfirmGamePage extends StatefulWidget {
 class _ConfirmGamePageState extends State<ConfirmGamePage> {
   final controller = chess.ChessBoardController();
   List <String?> PGNstring = [];
-
+  late Map <String, dynamic> gameInfo = {
+    "white": widget.whiteName,
+    "black": widget.blackName,
+    "event": widget.event,
+    "location": widget.location,
+    "date": DateTime.now(),
+    "gameStr": widget.gameString,
+  };
+  void updateGameInfo(Map <String, dynamic> newGameInfo){
+   setState(() {
+     gameInfo = newGameInfo;
+   });
+  }
   @override
   void initState(){
     super.initState();
@@ -60,7 +72,12 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                 ],
               ),
             ),
-            ElevatedButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>EditGamePage(moves: PGNstring,))), child: Text("Edit game")),
+            ElevatedButton(
+                onPressed: ()=>Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_)=>EditGamePage(
+                          moves: PGNstring, gameInfo: gameInfo, updateGameInfo: updateGameInfo,))), child: Text("Edit game")),
           ],
         ),
       ),
