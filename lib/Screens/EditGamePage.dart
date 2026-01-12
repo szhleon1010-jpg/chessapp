@@ -9,6 +9,19 @@ class EditGamePage extends StatefulWidget {
 }
 
 class _EditGamePageState extends State<EditGamePage> {
+  DateTime? selectedDate;
+  Future<void> _selectDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1830),
+      lastDate: DateTime.now(),
+    );
+
+    setState(() {
+      selectedDate = pickedDate;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,15 +45,85 @@ class _EditGamePageState extends State<EditGamePage> {
               },
             ),
           ),
-          Expanded(
-            child: Row(
-              children: [
-                Text("White"),
-                SizedBox(
-                  height: 50,)
-              ],
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 35),
+            child: Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("White"),
+                      SizedBox(
+                        height: 50,
+                        width: 300,
+                        child: TextField(),
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Black"),
+                      SizedBox(
+                        height: 50,
+                        width: 300,
+                        child: TextField(),
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Date"),
+                      SizedBox(
+                        height: 50,
+                        width: 300,
+                        child: ElevatedButton(onPressed: ()=>_selectDate(), child: Text(
+                          selectedDate != null
+                              ? '${selectedDate!.month}/${selectedDate!.day}/${selectedDate!.year}'
+                              : 'No date selected',
+                        ),)
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Event"),
+                      SizedBox(
+                        height: 50,
+                        width: 300,
+                        child: TextField(),
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Location"),
+                      SizedBox(
+                        height: 50,
+                        width: 300,
+                        child: TextField(),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
-          )
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          ElevatedButton(
+            onPressed: () => {},
+            child: Text("Save"),style: ElevatedButton.styleFrom(
+              side: BorderSide(
+                  color: Colors.white
+              )
+          ),
+          ),
         ],
       ),
     );
@@ -72,7 +155,6 @@ class _EditGamePageState extends State<EditGamePage> {
                 SizedBox(
                     width: 125,
                     child: TextFormField(initialValue:B)),
-
               ],
             ),
           )

@@ -5,8 +5,17 @@ import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
 
 class ConfirmGamePage extends StatefulWidget {
   final String gameString;
-  const ConfirmGamePage({super.key, required this.gameString});
-
+  final String whiteName;
+  final String blackName;
+  final String event;
+  final String location;
+  const ConfirmGamePage({super.key,
+    required this.gameString,
+    this.whiteName = "",
+    this.blackName = "",
+    this.event = "",
+    this.location = "",
+  });
   @override
   State<ConfirmGamePage> createState() => _ConfirmGamePageState();
 }
@@ -14,6 +23,7 @@ class ConfirmGamePage extends StatefulWidget {
 class _ConfirmGamePageState extends State<ConfirmGamePage> {
   final controller = chess.ChessBoardController();
   List <String?> PGNstring = [];
+
   @override
   void initState(){
     super.initState();
