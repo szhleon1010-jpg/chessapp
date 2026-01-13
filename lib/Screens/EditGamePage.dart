@@ -12,6 +12,11 @@ class EditGamePage extends StatefulWidget {
 
 class _EditGamePageState extends State<EditGamePage> {
   DateTime? selectedDate;
+  late final whiteController = TextEditingController(text: widget.gameInfo["white"],);
+  late final blackController = TextEditingController(text: widget.gameInfo["black"],);
+  late final eventController = TextEditingController(text: widget.gameInfo["event"],);
+  late final locationController = TextEditingController(text: widget.gameInfo["location"],);
+  List<TextEditingController> moveControllers = [];
   Future<void> _selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -23,6 +28,34 @@ class _EditGamePageState extends State<EditGamePage> {
     setState(() {
       selectedDate = pickedDate;
     });
+  }
+  void updateNewInfo(){
+    List<String> newMoves = [];
+    for(int i = 0; i < widget.moves.length; i++){
+      newMoves.add("${i + 1}. ${moveControllers[i * 2].text} ${moveControllers[i * 2 + 1].text}");
+    }
+    widget.updateGameInfo(
+        {
+          "white": whiteController.text,
+          "black": blackController.text,
+          "event": eventController.text,
+          "location": locationController.text,
+          "date": selectedDate,
+          "gameStr": newMoves.join(" "),
+        }
+    );
+  }
+  @override
+  void initState(){
+    super.initState();
+    for(int i = 0; i < widget.moves.length; i++){
+      final m = widget.moves[i]?.split(" ");
+      if(m?.length == 3){
+        for(int a = 1; a <= 2; a++){
+          moveControllers.add(TextEditingController(text: m?[a]));
+        }
+      }
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -42,8 +75,18 @@ class _EditGamePageState extends State<EditGamePage> {
               shrinkWrap: false,
               itemCount: widget.moves.length,
               itemBuilder: (context, index){
+                if(moveControllers.isEmpty){
+                  return CircularProgressIndicator();
+                }
                 final info = widget.moves[index]?.split(" ");
-                return movecell(info![0], info[1], info[2]);
+                if(info?.length == 3){
+                  return moveCell(info![0],
+                      moveControllers[index * 2],
+                      moveControllers[index * 2 + 1]);
+                }
+                else{
+                  return Container();
+                }
               },
             ),
           ),
@@ -59,7 +102,10 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextFormField(initialValue: widget.gameInfo["white"],),
+                        child: TextFormField(
+
+                          controller: whiteController,
+                        ),
                       )
                     ],
                   ),
@@ -70,7 +116,9 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextFormField(initialValue: widget.gameInfo["black"],),
+                        child: TextFormField(
+                          controller: blackController,
+                        ),
                       )
                     ],
                   ),
@@ -96,7 +144,9 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                          child: TextFormField(initialValue: widget.gameInfo["event"],),
+                          child: TextFormField(
+                            controller: eventController,
+                          ),
                       )
                     ],
                   ),
@@ -107,7 +157,9 @@ class _EditGamePageState extends State<EditGamePage> {
                       SizedBox(
                         height: 50,
                         width: 300,
-                        child: TextFormField(initialValue: widget.gameInfo["location"],),
+                        child: TextFormField(
+                          controller: locationController,
+                        ),
                       )
                     ],
                   ),
@@ -119,21 +171,22 @@ class _EditGamePageState extends State<EditGamePage> {
             height: 50,
           ),
           ElevatedButton(
-            onPressed: () => widget.updateGameInfo(
-              widget.gameInfo
-            ),
-            child: Text("Save"),style: ElevatedButton.styleFrom(
+            onPressed: (){
+              widget.updateGameInfo(widget.gameInfo);
+              Navigator.pop(context);
+            }, style: ElevatedButton.styleFrom(
               side: BorderSide(
                   color: Colors.white
               )
           ),
+            child: Text("Save"),
           ),
         ],
       ),
     );
   }
-  Widget movecell(String moveNum, String W, String B){
-    return Container(
+  Widget moveCell(String moveNum, TextEditingController W, TextEditingController B){
+    return SizedBox(
       height: 30,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -155,15 +208,23 @@ class _EditGamePageState extends State<EditGamePage> {
               children: [
                 SizedBox(
                     width: 125,
-                    child: TextFormField(initialValue:W)),
+                    child: TextFormField(controller:W)),
                 SizedBox(
                     width: 125,
-                    child: TextFormField(initialValue:B)),
+                    child: TextFormField(controller:B)),
               ],
             ),
           )
         ],
       ),
     );
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    for(TextEditingController controller in moveControllers){
+      controller.dispose();
+    }
+    super.dispose();
   }
 }

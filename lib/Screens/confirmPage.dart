@@ -23,30 +23,31 @@ class ConfirmGamePage extends StatefulWidget {
 class _ConfirmGamePageState extends State<ConfirmGamePage> {
   final controller = chess.ChessBoardController();
   List <String?> PGNstring = [];
-  late Map <String, dynamic> gameInfo = {
-    "white": widget.whiteName,
-    "black": widget.blackName,
-    "event": widget.event,
-    "location": widget.location,
-    "date": DateTime.now(),
-    "gameStr": widget.gameString,
-  };
+  late Map <String, dynamic> gameInfo ;
   void updateGameInfo(Map <String, dynamic> newGameInfo){
    setState(() {
      gameInfo = newGameInfo;
+
    });
   }
   @override
   void initState(){
     super.initState();
-    controller.loadPGN(widget.gameString);
+    gameInfo = {
+      "white": widget.whiteName,
+      "black": widget.blackName,
+      "event": widget.event,
+      "location": widget.location,
+      "date": DateTime.now(),
+      "gameStr": widget.gameString,
+    };
+    controller.loadPGN(gameInfo["gameStr"]);
     PGNstring = controller.getSan();
     print(PGNstring);
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Center(
         child: Column(
           children: [
@@ -60,7 +61,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                 controller.resetBoard();
                 Navigator.pop(context);
                 Navigator.push(context,MaterialPageRoute(builder: (_)=>
-                ViewGamePage(gameString: widget.gameString, controller: controller))
+                ViewGamePage(gameString: gameInfo["gameStr"], controller: controller))
                 );
               }, child: Text("Yes"))
             ],
@@ -68,7 +69,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
             Expanded(
               child: ListView(
                 children: [
-                  Text(widget.gameString),
+                  Text(gameInfo["gameStr"]),
                 ],
               ),
             ),

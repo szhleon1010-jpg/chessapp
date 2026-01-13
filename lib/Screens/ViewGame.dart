@@ -263,7 +263,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
       stockfish.stdin = 'go depth $depth';
     }
   }
-  Future<void> initializestockfish()async{
+  Future<void> initializeStockfish()async{
     while(stockfish.state.value != StockfishState.ready){
       await Future.delayed(Duration(milliseconds: 100));
       print(stockfish.state.value);
@@ -347,7 +347,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
   void initState(){
     super.initState();
     extractMovesFromPGN(widget.gameString);
-    initializestockfish();
+    initializeStockfish();
     controller.addListener((){
       if(!isLoading){
         stockfish.stdin = 'position fen ${controller.getFen()}';
