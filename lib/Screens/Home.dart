@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> screens = [
     UploadPage(),
     SaveGamePage(),
-    SignInPage()
+    ProfilePage()
   ];
   List<String> titles = [
     "Analyze New Game",

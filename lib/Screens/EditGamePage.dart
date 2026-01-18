@@ -101,7 +101,16 @@ class _EditGamePageState extends State<EditGamePage> {
                       Text("White"),
                       SizedBox(
                         height: 50,
-                        width: 300,
+                        width: 200,
+                        child: TextFormField(
+
+                          controller: whiteController,
+                        ),
+                      ),
+                      Text("Rating"),
+                      SizedBox(
+                        height: 50,
+                        width: 90,
                         child: TextFormField(
 
                           controller: whiteController,
