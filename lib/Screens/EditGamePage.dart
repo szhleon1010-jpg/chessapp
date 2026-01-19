@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class EditGamePage extends StatefulWidget {
   final List <String?> moves;
@@ -13,9 +14,12 @@ class EditGamePage extends StatefulWidget {
 class _EditGamePageState extends State<EditGamePage> {
   DateTime? selectedDate;
   late final whiteController = TextEditingController(text: widget.gameInfo["white"],);
+  late final whiteEloController = TextEditingController(text: widget.gameInfo["whiteElo"].toString(),);
   late final blackController = TextEditingController(text: widget.gameInfo["black"],);
+  late final blackEloController = TextEditingController(text: widget.gameInfo["blackElo"].toString(),);
   late final eventController = TextEditingController(text: widget.gameInfo["event"],);
   late final locationController = TextEditingController(text: widget.gameInfo["location"],);
+  String? isPlayer;
   List<TextEditingController> moveControllers = [];
   Future<void> _selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -29,6 +33,9 @@ class _EditGamePageState extends State<EditGamePage> {
       selectedDate = pickedDate;
     });
   }
+  List<String> nameSuggestions(String search){
+    return [""];
+  }
   void updateNewInfo(){
     List<String> newMoves = [];
     for(int i = 0; i < widget.moves.length; i++){
@@ -37,7 +44,9 @@ class _EditGamePageState extends State<EditGamePage> {
     widget.updateGameInfo(
         {
           "white": whiteController.text,
+          "whiteElo": whiteEloController.text,
           "black": blackController.text,
+          "blackElo": blackEloController.text,
           "event": eventController.text,
           "location": locationController.text,
           "date": selectedDate,
@@ -98,22 +107,43 @@ class _EditGamePageState extends State<EditGamePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("White"),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text("White"),
+                        ],
+                      ),
                       SizedBox(
                         height: 50,
                         width: 200,
-                        child: TextFormField(
-
-                          controller: whiteController,
-                        ),
+                        child: TypeAheadField<String>(
+                            controller: whiteController,
+                            itemBuilder: (context, name){
+                          return ListTile(
+                            title: Text(name),
+                          );
+                        }, onSelected:(name){
+                            whiteController.text = name;
+                        }, suggestionsCallback: (search){
+                          return nameSuggestions(search);
+                        })
                       ),
-                      Text("Rating"),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text("Rating"),
+                        ],
+                      ),
                       SizedBox(
                         height: 50,
                         width: 90,
                         child: TextFormField(
 
-                          controller: whiteController,
+                          controller: whiteEloController,
                         ),
                       )
                     ],
@@ -121,15 +151,49 @@ class _EditGamePageState extends State<EditGamePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Black"),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text("Black"),
+                        ],
+                      ),
                       SizedBox(
                         height: 50,
-                        width: 300,
+                        width: 200,
+                        child: TypeAheadField<String>(
+                            controller:blackController,
+                            itemBuilder: (context, name){
+                              return ListTile(
+                                title: Text(name),
+                              );
+                            }, onSelected:(name){
+                          blackController.text = name;
+                        }, suggestionsCallback: (search){
+                          return nameSuggestions(search);
+                        })
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text("Rating"),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 50,
+                        width: 90,
                         child: TextFormField(
-                          controller: blackController,
+
+                          controller: blackEloController,
                         ),
                       )
                     ],
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -170,6 +234,26 @@ class _EditGamePageState extends State<EditGamePage> {
                           controller: locationController,
                         ),
                       )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Which player are you?"),
+                      DropdownButton <String> (
+                          value:isPlayer ,
+                          dropdownColor: Color(0xff393838),
+                          items:
+                          [
+                            DropdownMenuItem(child: Text("White",),value: "White",),
+                            DropdownMenuItem(child: Text("Black",),value: "Black",),
+                            DropdownMenuItem(child: Text("Neither",),value: "Neither",),
+                          ]
+                          , onChanged: (String? value){
+                        setState(() {
+                          isPlayer = value!;
+                        });
+                      })
                     ],
                   ),
                 ],

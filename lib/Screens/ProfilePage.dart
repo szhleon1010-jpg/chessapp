@@ -1,3 +1,4 @@
+import 'package:chessapp/widgets/line_chart_sample5.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -71,10 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 250,
           margin: EdgeInsets.only(left: 5, right: 5),
           padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: Color(0xff777474)
-          ),
+          child: LineChartSample5(gradientColor1: Colors.red, gradientColor2: Colors.blue, gradientColor3: Colors.green, indicatorStrokeColor: Colors.white),
         ),
         CircularProgressIndicator()
       ],
