@@ -43,6 +43,8 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
      gameInfo = newGameInfo;
      controller.loadPGN(gameInfo["gameStr"]);
      PGNstring = controller.getSan();
+     gameInfo["gameStr"] = PGNstring.join(" ");
+     print(gameInfo);
    });
   }
   Future<bool> confirmEdits()async{
@@ -83,7 +85,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
     };
     controller.loadPGN(gameInfo["gameStr"]);
     PGNstring = controller.getSan();
-    print(PGNstring);
+    gameInfo["gameStr"] = PGNstring.join(" ");
   }
   @override
   Widget build(BuildContext context) {
