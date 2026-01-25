@@ -30,11 +30,42 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
   final controller = chess.ChessBoardController();
   List <String?> PGNstring = [];
   late Map <String, dynamic> gameInfo ;
-  void updateGameInfo(Map <String, dynamic> newGameInfo){
-   setState(() {
+  void updateGameInfo(Map <String, dynamic> newGameInfo)async{
+    controller.loadPGN(newGameInfo["gameStr"]);
+    List <String?> tempGame = controller.getSan();
+    if(tempGame.length!=PGNstring.length){
+      if(!(await confirmEdits())){
+        controller.loadPGN(gameInfo["gameStr"]);
+        return;
+      }
+    }
+    setState(() {
      gameInfo = newGameInfo;
-
+     controller.loadPGN(gameInfo["gameStr"]);
+     PGNstring = controller.getSan();
    });
+  }
+  Future<bool> confirmEdits()async{
+    bool confirm = false;
+    await showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text("Are you sure you want to save these changes?"),
+            content: Text("The moves may be shortened to maintain a legal game."),
+            actions: [
+              TextButton(onPressed: (){
+                Navigator.pop(context);
+              }, child: Text("Cancel")),
+              TextButton(onPressed: (){
+                confirm = true;
+                Navigator.pop(context);
+              }, child: Text("Confirm"))
+            ],
+          );
+        }
+    );
+    return confirm;
   }
   @override
   void initState(){
@@ -70,7 +101,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                 controller.resetBoard();
                 Navigator.pop(context);
                 Navigator.push(context,MaterialPageRoute(builder: (_)=>
-                ViewGamePage(gameString: gameInfo["gameStr"], controller: controller))
+                ViewGamePage(gameString: gameInfo["gameStr"], controller: controller, gameInfo: gameInfo,))
                 );
               }, child: Text("Yes"))
             ],

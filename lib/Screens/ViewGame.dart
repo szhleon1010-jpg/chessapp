@@ -23,8 +23,9 @@ enum moveGrade{
 }
 class ViewGamePage extends StatefulWidget {
   final String gameString;
+  final Map<String, dynamic> gameInfo;
   final chess.ChessBoardController controller;
-  const ViewGamePage({super.key,required this. gameString, required this.controller});
+  const ViewGamePage({super.key,required this. gameString, required this.controller, required this.gameInfo});
 
   @override
   State<ViewGamePage> createState() => _ViewGamePageState();
@@ -497,7 +498,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
             openSettingBox();
           }, icon: Icon(Icons.settings)),
           IconButton(onPressed: (){
-            FirebaseUtils.AddGame(widget.gameString, "bob", 1200, 1200, "jim");
+            FirebaseUtils.AddGame(widget.gameInfo);
           }, icon: Icon(Icons.save_alt_rounded))
         ],
 

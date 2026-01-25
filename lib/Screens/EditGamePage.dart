@@ -39,8 +39,14 @@ class _EditGamePageState extends State<EditGamePage> {
   void updateNewInfo(){
     List<String> newMoves = [];
     for(int i = 0; i < widget.moves.length; i++){
-      newMoves.add("${i + 1}. ${moveControllers[i * 2].text} ${moveControllers[i * 2 + 1].text}");
+      if (i < widget.moves.length-1){
+        newMoves.add("${i + 1}. ${moveControllers[i * 2].text} ${moveControllers[i * 2 + 1].text}");
+      }
+      else{
+        newMoves.add(widget.moves[widget.moves.length-1]!);
+      }
     }
+    print(newMoves);
     widget.updateGameInfo(
         {
           "white": whiteController.text,
@@ -265,8 +271,9 @@ class _EditGamePageState extends State<EditGamePage> {
           ),
           ElevatedButton(
             onPressed: (){
-              widget.updateGameInfo(widget.gameInfo);
               Navigator.pop(context);
+              updateNewInfo();
+              print(widget.gameInfo);
             }, style: ElevatedButton.styleFrom(
               side: BorderSide(
                   color: Colors.white
