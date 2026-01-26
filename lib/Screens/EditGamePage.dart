@@ -12,14 +12,14 @@ class EditGamePage extends StatefulWidget {
 }
 
 class _EditGamePageState extends State<EditGamePage> {
-  DateTime? selectedDate;
+  late DateTime? selectedDate = widget.gameInfo["date"].toDate();
   late final whiteController = TextEditingController(text: widget.gameInfo["white"],);
   late final whiteEloController = TextEditingController(text: widget.gameInfo["whiteElo"].toString(),);
   late final blackController = TextEditingController(text: widget.gameInfo["black"],);
   late final blackEloController = TextEditingController(text: widget.gameInfo["blackElo"].toString(),);
   late final eventController = TextEditingController(text: widget.gameInfo["event"],);
   late final locationController = TextEditingController(text: widget.gameInfo["location"],);
-  String? isPlayer;
+  late String? isPlayer = widget.gameInfo["isPlayer"];
   List<TextEditingController> moveControllers = [];
   Future<void> _selectDate() async {
     final DateTime? pickedDate = await showDatePicker(

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:chessapp/Screens/ViewGame.dart';
 import 'package:chessapp/Screens/confirmPage.dart';
 import 'package:chessapp/Services/OpenAIprompt.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -30,7 +31,7 @@ class _UploadPageState extends State<UploadPage> {
       String PGN = await OpenAIprompt.getPGNfromImage(base64image);
       Map <String, dynamic> gameData = jsonDecode(PGN);
     } else{
-      Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString))));
+      Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString), date: Timestamp.now(),)));
     }
   }
   String cleanPGN(String pgn) {

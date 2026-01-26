@@ -1,26 +1,29 @@
 import 'package:chessapp/Screens/EditGamePage.dart';
 import 'package:chessapp/Screens/ViewGame.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
 
 class ConfirmGamePage extends StatefulWidget {
   final String gameString;
   final String whiteName;
-  final int whiteElo;
+  final String whiteElo;
   final String blackName;
-  final int blackElo;
+  final String blackElo;
   final String event;
   final String location;
   final String isPlayer;
+  final Timestamp date;
   const ConfirmGamePage({super.key,
     required this.gameString,
     this.whiteName = "",
-    this.whiteElo = 1200,
+    this.whiteElo = "1200",
     this.blackName = "",
-    this.blackElo = 1200,
+    this.blackElo = "1200",
     this.event = "",
     this.location = "",
     this.isPlayer = "Neither",
+    required this.date
   });
   @override
   State<ConfirmGamePage> createState() => _ConfirmGamePageState();
@@ -79,9 +82,10 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
       "blackElo": widget.blackElo,
       "event": widget.event,
       "location": widget.location,
-      "date": DateTime.now(),
+      "date": widget.date,
       "gameStr": widget.gameString,
       "isPlayer" : widget.isPlayer,
+      "gameId" : ""
     };
     controller.loadPGN(gameInfo["gameStr"]);
     PGNstring = controller.getSan();

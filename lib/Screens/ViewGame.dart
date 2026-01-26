@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:chessapp/Services/Firebase_utils.dart';
 import 'package:chessapp/widgets/eval%20bar.dart';
 import 'package:flutter/cupertino.dart';

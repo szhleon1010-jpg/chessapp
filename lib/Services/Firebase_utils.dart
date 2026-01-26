@@ -7,7 +7,16 @@ class FirebaseUtils {
     try{
       gameInfo ["dateCreated"] = FieldValue.serverTimestamp();
       gameInfo ["user_id"] = FirebaseAuth.instance.currentUser!.uid;
-      await gamesREF.doc().set(gameInfo);
+    print(gameInfo["gameId"]);
+      if(gameInfo["gameId"].isNotEmpty && (await gamesREF.doc(gameInfo["gameId"]).get()).exists){
+        print("here");
+        await gamesREF.doc(gameInfo ["gameId"]).set(gameInfo);
+      }
+      else{
+        print("there");
+        await gamesREF.doc().set(gameInfo);
+
+      }
       return true;
     }catch(e){
       throw Exception("Error adding new games to Firestore: $e");
