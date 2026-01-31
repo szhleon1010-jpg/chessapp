@@ -14,6 +14,7 @@ class ConfirmGamePage extends StatefulWidget {
   final String location;
   final String isPlayer;
   final Timestamp date;
+  final String gameId;
   const ConfirmGamePage({super.key,
     required this.gameString,
     this.whiteName = "",
@@ -23,6 +24,7 @@ class ConfirmGamePage extends StatefulWidget {
     this.event = "",
     this.location = "",
     this.isPlayer = "Neither",
+    this.gameId = "",
     required this.date
   });
   @override
@@ -85,7 +87,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
       "date": widget.date,
       "gameStr": widget.gameString,
       "isPlayer" : widget.isPlayer,
-      "gameId" : ""
+      "gameId" : widget.gameId
     };
     controller.loadPGN(gameInfo["gameStr"]);
     PGNstring = controller.getSan();

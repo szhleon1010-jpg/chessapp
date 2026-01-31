@@ -48,16 +48,18 @@ class _EditGamePageState extends State<EditGamePage> {
     }
     print(newMoves);
     widget.updateGameInfo(
-        {
-          "white": whiteController.text,
-          "whiteElo": whiteEloController.text,
-          "black": blackController.text,
-          "blackElo": blackEloController.text,
-          "event": eventController.text,
-          "location": locationController.text,
-          "date": selectedDate,
-          "gameStr": newMoves.join(" "),
-        }
+      {
+        "white": whiteController.text,
+        "whiteElo": whiteEloController.text,
+        "black": blackController.text,
+        "blackElo": blackEloController.text,
+        "event": eventController.text,
+        "location": locationController.text,
+        "date": selectedDate,
+        "isPlayer": widget.gameInfo["isPlayer"],
+        "gameId": widget.gameInfo["gameId"],
+        "gameStr": newMoves.join(" "),
+      }
     );
   }
   @override

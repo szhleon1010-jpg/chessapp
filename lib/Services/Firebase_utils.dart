@@ -14,8 +14,11 @@ class FirebaseUtils {
       }
       else{
         print("there");
-        await gamesREF.doc().set(gameInfo);
-
+        DocumentReference newGame = gamesREF.doc();
+        await newGame.set(gameInfo);
+        await newGame.update({
+          "gameId": newGame.id
+        });
       }
       return true;
     }catch(e){

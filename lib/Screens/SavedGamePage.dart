@@ -40,18 +40,18 @@ class _SaveGamePageState extends State<SaveGamePage> {
                   itemCount: games.length,
                   itemBuilder: (context, index){
                     final game = games[index];
-                    return gameTile(game["gameStr"], game["black"],game["blackElo"], game["whiteElo"], game["white"],game["date"], game["event"], game["location"], game["isPlayer"]);
+                    return gameTile(game["gameStr"], game["black"],game["blackElo"], game["whiteElo"], game["white"],game["date"], game["event"], game["location"], game["isPlayer"], game["gameId"]);
                   })
             ),
       ],
     );
   }
-  Widget gameTile(String pgn, String black_name, String black_elo, String white_elo, String white_name, Timestamp date, String event, String location, String isPlayer){
+  Widget gameTile(String pgn, String black_name, String black_elo, String white_elo, String white_name, Timestamp date, String event, String location, String isPlayer, String gameId){
     final tempDate = date.toDate();
     final formatDate = DateFormat("MM/dd/yyyy").format(tempDate);
     return GestureDetector(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString: pgn, whiteName: white_name, whiteElo: white_elo, blackName: black_name, blackElo: black_elo, event: event, location: location, isPlayer: isPlayer, date: date)));
+        Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString: pgn, whiteName: white_name, whiteElo: white_elo, blackName: black_name, blackElo: black_elo, event: event, location: location, isPlayer: isPlayer, date: date, gameId: gameId,)));
       },
       child: Container(
         decoration: BoxDecoration(
