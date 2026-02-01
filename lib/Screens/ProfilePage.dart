@@ -1,5 +1,11 @@
+import 'package:chessapp/widgets/GameData.dart';
 import 'package:chessapp/widgets/line_chart_sample5.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../Services/Firebase_utils.dart';
+import 'confirmPage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -9,6 +15,46 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int rating = 1200;
+  int winRate = 100;
+  List <int> winLoseDraw = [0,0,0];
+  List <GameData> gameData = [];
+  List<Map<String,dynamic>> games = [];
+  Future<void> loadGames() async{
+    final loadedGames = await FirebaseUtils.fetchUserGames();
+    setState(() {
+      if(loadedGames == null){
+        games = [];
+      }
+      else{
+        games = loadedGames;
+        loadGameData();
+      }
+    });
+    return ;
+  }
+  void loadGameData(){
+    for(Map <String,dynamic> game in games){
+      int tempRating = 0;
+      List <String> gameStr = game["gameStr"].split(" ");
+      String res = gameStr[gameStr.length - 1];
+      if(game["isPlayer"] == "White"){
+        tempRating = int.parse(game["whiteElo"]);
+      }
+      else if (game["isPlayer"] == "Black"){
+        tempRating = int.parse(game["blackElo"]);
+      }
+      if(tempRating != 0){
+        gameData.add(GameData(tempRating, game["date"], res));
+      }
+    }
+  }
+  @override
+  void initState(){
+    super.initState();
+    loadGames();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -72,16 +118,26 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 250,
           margin: EdgeInsets.only(left: 5, right: 5),
           padding: EdgeInsets.all(10),
-          child: LineChartSample5(gradientColor1: Colors.red, gradientColor2: Colors.blue, gradientColor3: Colors.green, indicatorStrokeColor: Colors.white),
+            child: LineChartSample2(),
         ),
-        CircularProgressIndicator()
+        Expanded(
+            child:(games.isEmpty)? Center(child: CircularProgressIndicator(),):
+            ListView.builder(
+                itemCount: games.length,
+                itemBuilder: (context, index){
+                  final game = games[index];
+                  return gameTile(game["gameStr"], game["black"],game["blackElo"], game["whiteElo"], game["white"],game["date"], game["event"], game["location"], game["isPlayer"], game["gameId"]);
+                })
+        ),
       ],
     );
   }
-  Widget gameTile(String pgn, String black_name, int black_elo, int white_elo, String white_name,String date){
+  Widget gameTile(String pgn, String black_name, String black_elo, String white_elo, String white_name, Timestamp date, String event, String location, String isPlayer, String gameId){
+    final tempDate = date.toDate();
+    final formatDate = DateFormat("MM/dd/yyyy").format(tempDate);
     return GestureDetector(
       onTap: (){
-       // Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString: pgn)));
+        Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString: pgn, whiteName: white_name, whiteElo: white_elo, blackName: black_name, blackElo: black_elo, event: event, location: location, isPlayer: isPlayer, date: date, gameId: gameId,)));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -97,31 +153,57 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.center,
                   spacing: 7,
                   children: [
-                    Text("White", style: TextStyle(fontWeight: FontWeight.bold),),
-                    RichText(
-                      text: TextSpan(
-                          style: TextStyle(fontSize: 14),
-                          text: white_name,
-                          children: [
-                            TextSpan(
-                                text: " ($white_elo)"
-                            )
-                          ]
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 10,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text("White", style: TextStyle(fontWeight: FontWeight.bold),),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                    style: TextStyle(fontSize: 14),
+                                    text: white_name,
+                                    children: [
+                                      TextSpan(
+                                          text: " ($white_elo)"
+                                      )
+                                    ]
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          child: Text("vs."),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text("Black", style: TextStyle(fontWeight: FontWeight.bold),),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+
+                                    style: TextStyle(fontSize: 14),
+                                    text: black_name,
+                                    children: [
+                                      TextSpan(
+                                          text: " ($black_elo)"
+                                      )
+                                    ]
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(date),
-                    Text("Black", style: TextStyle(fontWeight: FontWeight.bold),),
-                    RichText(
-                      text: TextSpan(
-                          style: TextStyle(fontSize: 14),
-                          text: black_name,
-                          children: [
-                            TextSpan(
-                                text: " ($black_elo)"
-                            )
-                          ]
-                      ),
-                    ),
+                    Text(formatDate),
+                    Text(event),
+                    Text(location),
                   ],
                 ),
               ),
