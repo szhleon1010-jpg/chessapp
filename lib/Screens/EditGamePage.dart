@@ -56,7 +56,7 @@ class _EditGamePageState extends State<EditGamePage> {
         "event": eventController.text,
         "location": locationController.text,
         "date": selectedDate,
-        "isPlayer": widget.gameInfo["isPlayer"],
+        "isPlayer": isPlayer,
         "gameId": widget.gameInfo["gameId"],
         "gameStr": newMoves.join(" "),
       }

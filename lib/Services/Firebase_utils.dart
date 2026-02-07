@@ -50,4 +50,14 @@ class FirebaseUtils {
       throw Exception("Error fetching game from Firestore: $e");
     }
   }
+  static Future<Map<String,dynamic>> fetchGame(String gameId) async{
+    try{
+      final CollectionReference gamesREF = FirebaseFirestore.instance.collection("games");
+      DocumentSnapshot snapshot = await gamesREF.doc(gameId).get();
+      Map<String, dynamic> gameData = snapshot.data as Map<String, dynamic>;
+      return gameData;
+    }catch(e) {
+      throw Exception("Error fetching game from Firestore: $e");
+    }
+  }
 }

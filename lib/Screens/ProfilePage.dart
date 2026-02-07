@@ -33,21 +33,43 @@ class _ProfilePageState extends State<ProfilePage> {
     });
     return ;
   }
-  void loadGameData(){
+  void loadGameData()async{
     for(Map <String,dynamic> game in games){
       int tempRating = 0;
       List <String> gameStr = game["gameStr"].split(" ");
       String res = gameStr[gameStr.length - 1];
       if(game["isPlayer"] == "White"){
         tempRating = int.parse(game["whiteElo"]);
+        if(res == "1-0"){
+          winLoseDraw[0] += 1;
+        }
+        else if(res == "1/2-1/2"){
+          winLoseDraw[2] += 1;
+        }
+        else{
+          winLoseDraw[1] += 1;
+        }
       }
       else if (game["isPlayer"] == "Black"){
         tempRating = int.parse(game["blackElo"]);
+        if(res == "0-1"){
+          winLoseDraw[0] += 1;
+        }
+        else if(res == "1/2-1/2"){
+          winLoseDraw[2] += 1;
+        }
+        else{
+          winLoseDraw[1] += 1;
+        }
       }
       if(tempRating != 0){
-        gameData.add(GameData(tempRating, game["date"], res));
+        gameData.add(GameData(tempRating, game["date"], res, game));
       }
     }
+    gameData.sort((a, b) => b.date.compareTo(a.date));
+    winRate = (winLoseDraw[0] / (winLoseDraw[0] + winLoseDraw[1] + winLoseDraw[2]) * 100).round();
+
+    print(gameData);
   }
   @override
   void initState(){
@@ -102,8 +124,8 @@ class _ProfilePageState extends State<ProfilePage> {
                        Column(
                          children: [
                            Text("rating/elo: 9999", style: TextStyle(fontSize: 17),),
-                           Text("Win rate: 100%", style: TextStyle(fontSize: 17),),
-                           Text("Win/Lose/Draw: 1/0/0", style: TextStyle(fontSize: 17),)
+                           Text("Win rate: ${winRate.toString()}%", style: TextStyle(fontSize: 17),),
+                           Text("Win/Lose/Draw: ${winLoseDraw.join('/')}", style: TextStyle(fontSize: 17),)
                          ],
                        ),
                      ],
@@ -118,14 +140,14 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 250,
           margin: EdgeInsets.only(left: 5, right: 5),
           padding: EdgeInsets.all(10),
-            child: LineChartSample2(),
+            child: LineChartSample2(gameData: gameData,),
         ),
         Expanded(
-            child:(games.isEmpty)? Center(child: CircularProgressIndicator(),):
+            child:(gameData.isEmpty)? Center(child: CircularProgressIndicator(),):
             ListView.builder(
-                itemCount: games.length,
+                itemCount: gameData.length,
                 itemBuilder: (context, index){
-                  final game = games[index];
+                  final game = gameData[index].data;
                   return gameTile(game["gameStr"], game["black"],game["blackElo"], game["whiteElo"], game["white"],game["date"], game["event"], game["location"], game["isPlayer"], game["gameId"]);
                 })
         ),
@@ -147,7 +169,11 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         child: Row(
           children: [
-            Image.network(width: 200, "https://images.chesscomfiles.com/uploads/v1/images_users/tiny_mce/CHESScom/phphK5JVu.png"),
+            Container(
+              width: 200,
+              color: Colors.white10,
+            ),
+            // Image.network(width: 200, "https://images.chesscomfiles.com/uploads/v1/images_users/tiny_mce/CHESScom/phphK5JVu.png"),
             Expanded(
               child: Center(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.center,

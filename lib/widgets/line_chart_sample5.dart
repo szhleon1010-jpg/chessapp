@@ -1,8 +1,10 @@
+import 'package:chessapp/widgets/GameData.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
+  final List<GameData> gameData;
+  const LineChartSample2({super.key, required this.gameData});
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -14,7 +16,16 @@ class _LineChartSample2State extends State<LineChartSample2> {
   ];
 
   bool showAvg = false;
-
+  List<FlSpot> ratingPoints(){
+    List<FlSpot> points = [];
+    for(GameData game in widget.gameData){
+      DateTime date =  game.date.toDate();
+      double x = (date.month - 1) + (date.day / 30.0);
+      double y = game.rating.toDouble();
+      points.add(FlSpot(x, y));
+    }
+    return points;
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -43,7 +54,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               });
             },
             child: Text(
-              'avg',
+              'rating',
               style: TextStyle(
                 fontSize: 12,
                 color: showAvg
@@ -63,9 +74,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontSize: 16,
     );
     String text = switch (value.toInt()) {
-      2 => 'MAR',
+      0 => 'Jan',
       5 => 'JUN',
-      8 => 'SEP',
+      11 => 'Dec',
       _ => '',
     };
     return SideTitleWidget(
@@ -80,9 +91,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontSize: 15,
     );
     String text = switch (value.toInt()) {
-      1 => '10K',
-      3 => '30k',
-      5 => '50k',
+      1 => '  900',
+      3 => '1500',
+      5 => '2100',
       _ => '',
     };
 
@@ -144,15 +155,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       maxY: 6,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
+          spots: ratingPoints(),
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,

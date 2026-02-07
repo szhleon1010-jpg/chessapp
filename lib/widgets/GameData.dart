@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class GameData {
   int rating;
-  DateTime date;
+  Timestamp date;
   String result;
-  GameData (this.rating, this.date, this.result);
+  Map<String,dynamic> data;
+  GameData (this.rating, this.date, this.result, this.data);
 }
