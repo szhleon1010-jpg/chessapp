@@ -68,6 +68,9 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     gameData.sort((a, b) => b.date.compareTo(a.date));
     winRate = (winLoseDraw[0] / (winLoseDraw[0] + winLoseDraw[1] + winLoseDraw[2]) * 100).round();
+    if(gameData.isNotEmpty){
+      rating = gameData[0].rating;
+    }
 
     print(gameData);
   }
@@ -123,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                      children: [
                        Column(
                          children: [
-                           Text("rating/elo: 9999", style: TextStyle(fontSize: 17),),
+                           Text("rating/elo: ${rating.toString()}", style: TextStyle(fontSize: 17),),
                            Text("Win rate: ${winRate.toString()}%", style: TextStyle(fontSize: 17),),
                            Text("Win/Lose/Draw: ${winLoseDraw.join('/')}", style: TextStyle(fontSize: 17),)
                          ],

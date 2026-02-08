@@ -4,6 +4,7 @@ import 'package:chessapp/Screens/Accounts/createAccount.dart';
 import 'package:chessapp/Screens/SavedGamePage.dart';
 import 'package:chessapp/Screens/ProfilePage.dart';
 import 'package:chessapp/Screens/Analyzepage.dart';
+import 'package:chessapp/Screens/Settings.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -46,13 +47,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       backgroundColor: Constants.mainBackgroundColor,
       appBar: AppBar(
-          backgroundColor: Constants.appbarColor,
+        backgroundColor: Constants.appbarColor,
         title: Text(
           style: TextStyle(
             color: Colors.white
           ),
           titles[selectedScreen]
-        )
+        ),
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (_)=> SettingPage()));
+          }, icon: Icon(Icons.settings)),
+        ],
       ),
       body: screens[selectedScreen ],
     );

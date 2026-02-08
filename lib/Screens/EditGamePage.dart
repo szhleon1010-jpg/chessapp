@@ -39,6 +39,7 @@ class _EditGamePageState extends State<EditGamePage> {
   void updateNewInfo(){
     List<String> newMoves = [];
     for(int i = 0; i < widget.moves.length; i++){
+      print(widget.moves);
       if (i < widget.moves.length-1){
         newMoves.add("${i + 1}. ${moveControllers[i * 2].text} ${moveControllers[i * 2 + 1].text}");
       }
@@ -46,7 +47,7 @@ class _EditGamePageState extends State<EditGamePage> {
         newMoves.add(widget.moves[widget.moves.length-1]!);
       }
     }
-    print(newMoves);
+    print(isPlayer);
     widget.updateGameInfo(
       {
         "white": whiteController.text,
@@ -72,6 +73,10 @@ class _EditGamePageState extends State<EditGamePage> {
           moveControllers.add(TextEditingController(text: m?[a]));
         }
       }
+      else if (m?.length == 2){
+        moveControllers.add(TextEditingController(text: m?[1]));
+        moveControllers.add(TextEditingController());
+      }
     }
   }
   @override
@@ -96,10 +101,10 @@ class _EditGamePageState extends State<EditGamePage> {
                   return CircularProgressIndicator();
                 }
                 final info = widget.moves[index]?.split(" ");
-                if(info?.length == 3){
-                  return moveCell(info![0],
-                      moveControllers[index * 2],
-                      moveControllers[index * 2 + 1]);
+                if(info!.length >= 2){
+                  return moveCell(info[0],
+                  moveControllers[index * 2],
+                  moveControllers[index * 2 + 1]);
                 }
                 else{
                   return Container();

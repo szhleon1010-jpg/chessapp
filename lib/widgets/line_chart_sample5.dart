@@ -18,12 +18,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
   bool showAvg = false;
   List<FlSpot> ratingPoints(){
     List<FlSpot> points = [];
-    for(GameData game in widget.gameData){
+    for(int i = widget.gameData.length - 1; i >= 0; i -= 1){
+      GameData game = widget.gameData [i];
       DateTime date =  game.date.toDate();
       double x = (date.month - 1) + (date.day / 30.0);
-      double y = game.rating.toDouble();
+      double y = game.rating.toDouble()/600;
       points.add(FlSpot(x, y));
+      print("$x, $y");
     }
+
     return points;
   }
   @override

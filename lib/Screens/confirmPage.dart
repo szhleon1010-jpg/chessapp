@@ -104,7 +104,11 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-              ElevatedButton(onPressed: ()=>Navigator.pop(context), child: Text("No")),
+              ElevatedButton(onPressed: ()=>Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_)=>EditGamePage(
+                        moves: PGNstring, gameInfo: gameInfo, updateGameInfo: updateGameInfo,))), child: Text("Edit Game")),
               ElevatedButton(onPressed: (){
                 controller.resetBoard();
                 Navigator.pop(context);
@@ -121,12 +125,6 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
                 ],
               ),
             ),
-            ElevatedButton(
-                onPressed: ()=>Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_)=>EditGamePage(
-                          moves: PGNstring, gameInfo: gameInfo, updateGameInfo: updateGameInfo,))), child: Text("Edit game")),
           ],
         ),
       ),

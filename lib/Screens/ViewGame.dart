@@ -336,7 +336,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
     super.initState();
     extractMovesFromPGN(widget.gameString);
     initializeStockfish();
-    controller.addListener(() {
+    controller.addListener((){
       if (!isLoading) {
         stockfish.stdin = 'stop';
         stockfish.stdin = 'position fen ${controller.getFen()}';
@@ -371,7 +371,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
                     width: 150,
                     child: Text(Opening, style: TextStyle(color: Colors.white),)),
                 ElevatedButton(onPressed: ()=>undoMove(), child: Icon(Icons.arrow_circle_left, size: 30,)),
-                ElevatedButton(onPressed: ()=> doNextMove(true), child: Icon(Icons.arrow_circle_right, size: 30,))
+                  ElevatedButton(onPressed: ()=> doNextMove(true), child: Icon(Icons.arrow_circle_right, size: 30,))
               ],
             ),
             Expanded(
