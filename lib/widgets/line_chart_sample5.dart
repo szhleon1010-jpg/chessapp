@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:chessapp/widgets/GameData.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class LineChartSample2 extends StatefulWidget {
   final List<GameData> gameData;
@@ -14,21 +17,34 @@ class _LineChartSample2State extends State<LineChartSample2> {
   List<Color> gradientColors = [
     Colors.greenAccent, Colors.green
   ];
+  late int lowestRating = 5000;
+  late int highestRating = 100;
 
-  bool showAvg = false;
   List<FlSpot> ratingPoints(){
     List<FlSpot> points = [];
+    DateTime oldest  = widget.gameData [widget.gameData.length -1 ].date.toDate();
     for(int i = widget.gameData.length - 1; i >= 0; i -= 1){
       GameData game = widget.gameData [i];
+      lowestRating = math.min(lowestRating, game.rating);
+      highestRating = math.max(highestRating, game.rating);
+
       DateTime date =  game.date.toDate();
-      double x = (date.month - 1) + (date.day / 30.0);
-      double y = game.rating.toDouble()/600;
+      double x = ((date.year - oldest.year)*12+date.month - 1) + (date.day / 30.0);
+      double y = game.rating.toDouble();
       points.add(FlSpot(x, y));
       print("$x, $y");
     }
 
     return points;
   }
+  int monthRange(){
+    GameData recent = widget.gameData [0];
+    GameData oldest  = widget.gameData [widget.gameData.length -1 ];
+    int years = recent.date.toDate().year - oldest.date.toDate().year;
+    int months = ((years + 1 )*12);
+    return months;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -43,28 +59,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
               bottom: 12,
             ),
             child: LineChart(
-              showAvg ? avgData() : mainData(),
+              mainData(),
             ),
           ),
         ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'rating',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg
-                    ? Colors.white.withValues(alpha: 0.5)
-                    : Colors.white,
-              ),
-            ),
+       Text(
+          'rating',
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
           ),
         ),
       ],
@@ -76,12 +79,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontWeight: FontWeight.bold,
       fontSize: 16,
     );
-    String text = switch (value.toInt()) {
-      0 => 'Jan',
-      5 => 'JUN',
-      11 => 'Dec',
-      _ => '',
-    };
+
+    final dateTime = DateTime(2000, value.toInt(), 1);
+    final abbreviation = DateFormat('MMM').format(dateTime);
+    String text = (value % 3 == 0) ? abbreviation : "";
     return SideTitleWidget(
       meta: meta,
       child: Text(text, style: style),
@@ -93,12 +94,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontWeight: FontWeight.bold,
       fontSize: 15,
     );
-    String text = switch (value.toInt()) {
-      1 => '  900',
-      3 => '1500',
-      5 => '2100',
-      _ => '',
-    };
+    String text = "";
+    if(value == lowestRating){
+      text = lowestRating.toString();
+    } else if (value == highestRating) {
+      text = highestRating.toString();
+    }
 
     return Text(text, style: style, textAlign: TextAlign.left);
   }
@@ -109,11 +110,11 @@ class _LineChartSample2State extends State<LineChartSample2> {
         show: true,
         drawVerticalLine: true,
         horizontalInterval: 1,
-        verticalInterval: 1,
+        verticalInterval: 3,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.cyan,
-            strokeWidth: 1,
+            strokeWidth: 0,
           );
         },
         getDrawingVerticalLine: (value) {
@@ -152,10 +153,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
+      minX: 1,
+      maxX: monthRange().toDouble(),
+      minY: lowestRating.toDouble(),
+      maxY: highestRating.toDouble(),
       lineBarsData: [
         LineChartBarData(
           spots: ratingPoints(),
@@ -181,100 +182,5 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
   }
 
-  LineChartData avgData() {
-    return LineChartData(
-      lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        verticalInterval: 1,
-        horizontalInterval: 1,
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
-            interval: 1,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-            interval: 1,
-          ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
-          isCurved: true,
-          gradient: LinearGradient(
-            colors: [
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-            ],
-          ),
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withValues(alpha: 0.1),
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withValues(alpha: 0.1),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
 }
