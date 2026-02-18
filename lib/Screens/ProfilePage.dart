@@ -94,29 +94,32 @@ class _ProfilePageState extends State<ProfilePage> {
             margin: EdgeInsets.only(left: 5, right: 5),
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
+              borderRadius: BorderRadius.circular(24),
               color: Color(0xff777474)
             ),
             child: Row(
                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                children: [
-                 Column(
-                   spacing: 5,
-                   children: [
-                     Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Color(0xff5a5a5a)
-                      ),
-                       child: CircleAvatar(
-                         radius: 35,
-                        backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/0/03/Twitter_default_profile_400x400.png"),
-                       ),
-                     ),
-                     Text("user123456789", style: TextStyle(fontSize: 20),),
-                   ],
+                 Center(
+                   child: Text("Your Stats", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
                  ),
+                 // Column(
+                 //   spacing: 5,
+                 //   children: [
+                 //     Container(
+                 //      padding: EdgeInsets.all(10),
+                 //      decoration: BoxDecoration(
+                 //          borderRadius: BorderRadius.circular(50),
+                 //          color: Color(0xff5a5a5a)
+                 //      ),
+                 //       child: CircleAvatar(
+                 //         radius: 35,
+                 //        backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/0/03/Twitter_default_profile_400x400.png"),
+                 //       ),
+                 //     ),
+                 //     Text("user123456789", style: TextStyle(fontSize: 20),),
+                 //   ],
+                 // ),
                  Container(
                    padding: EdgeInsets.all(8),
                    decoration: BoxDecoration(
@@ -127,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
                      children: [
                        Column(
                          children: [
-                           Text("rating/elo: ${rating.toString()}", style: TextStyle(fontSize: 17),),
+                           Text("Rating: ${rating.toString()}", style: TextStyle(fontSize: 17),),
                            Text("Win rate: ${winRate.toString()}%", style: TextStyle(fontSize: 17),),
                            Text("Win/Lose/Draw: ${winLoseDraw.join('/')}", style: TextStyle(fontSize: 17),)
                          ],
