@@ -1,5 +1,5 @@
 import 'package:chessapp/widgets/GameData.dart';
-import 'package:chessapp/widgets/line_chart_sample5.dart';
+import 'package:chessapp/widgets/RatingChart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 250,
           margin: EdgeInsets.only(left: 5, right: 5),
           padding: EdgeInsets.all(10),
-            child: LineChartSample2(gameData: gameData,),
+            child: (gameData.isNotEmpty) ? RatingChart(gameData: gameData,) : Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator())),
         ),
         Expanded(
             child:(gameData.isEmpty)? Center(child: CircularProgressIndicator(),):

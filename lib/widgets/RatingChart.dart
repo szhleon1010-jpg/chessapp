@@ -5,20 +5,23 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class LineChartSample2 extends StatefulWidget {
+class RatingChart extends StatefulWidget {
   final List<GameData> gameData;
-  const LineChartSample2({super.key, required this.gameData});
+  const RatingChart({super.key, required this.gameData});
 
   @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
+  State<RatingChart> createState() => _RatingChartState();
 }
 
-class _LineChartSample2State extends State<LineChartSample2> {
+class _RatingChartState extends State<RatingChart> {
   List<Color> gradientColors = [
     Colors.greenAccent, Colors.green
   ];
   late int lowestRating = 5000;
   late int highestRating = 100;
+
+  List<FlSpot> rating = [];
+  int months = 0;
 
   List<FlSpot> ratingPoints(){
     List<FlSpot> points = [];
@@ -29,7 +32,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       highestRating = math.max(highestRating, game.rating);
 
       DateTime date =  game.date.toDate();
-      double x = ((date.year - oldest.year)*12+date.month - 1) + (date.day / 30.0);
+      double x = ((date.year - oldest.year)*12+date.month) + (date.day / 30.0);
       double y = game.rating.toDouble();
       points.add(FlSpot(x, y));
       print("$x, $y");
@@ -43,6 +46,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
     int years = recent.date.toDate().year - oldest.date.toDate().year;
     int months = ((years + 1 )*12);
     return months;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    rating = ratingPoints();
+    months = monthRange();
   }
 
   @override
@@ -154,12 +164,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 1,
-      maxX: monthRange().toDouble(),
-      minY: lowestRating.toDouble(),
-      maxY: highestRating.toDouble(),
+      maxX: months.toDouble(),
+      minY: lowestRating.toDouble() - 100,
+      maxY: highestRating.toDouble() + 100,
       lineBarsData: [
         LineChartBarData(
-          spots: ratingPoints(),
+          spots: rating,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
