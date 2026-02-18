@@ -130,7 +130,7 @@ class _RatingChartState extends State<RatingChart> {
         getDrawingVerticalLine: (value) {
           return const FlLine(
             color: Colors.cyan,
-            strokeWidth: 1,
+            strokeWidth: 2,
           );
         },
       ),

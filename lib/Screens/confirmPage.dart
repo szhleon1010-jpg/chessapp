@@ -99,7 +99,7 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
       body: Center(
         child: Column(
           children: [
-            chess.ChessBoard(controller: controller),
+            chess.ChessBoard(controller: controller, enableUserMoves: false,),
             Text("Is this final position correct?", style: TextStyle(fontSize: 20),),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
