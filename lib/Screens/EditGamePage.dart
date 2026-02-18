@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -56,7 +57,7 @@ class _EditGamePageState extends State<EditGamePage> {
         "blackElo": blackEloController.text,
         "event": eventController.text,
         "location": locationController.text,
-        "date": selectedDate,
+        "date": Timestamp.fromDate(selectedDate!),
         "isPlayer": isPlayer,
         "gameId": widget.gameInfo["gameId"],
         "gameStr": newMoves.join(" "),
