@@ -146,6 +146,40 @@ class _ViewGamePageState extends State<ViewGamePage> {
     });
   }
 
+  void showSaveDialog() async {
+    bool loading = false;
+
+    showDialog(context: context, builder: (context) {
+      return AlertDialog(
+        backgroundColor: Color(0xff393838),
+        title: Text("Save Game to Library"),
+        content: SizedBox(
+          height: 75,
+          child: Column(
+            children: [
+              Text("Do you want to save this game to your library?"),
+              (loading) ? CircularProgressIndicator() : Container()
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+          TextButton(onPressed: () async {
+            loading = true;
+            bool result = await FirebaseUtils.AddGame(widget.gameInfo);
+            if(result){
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Game successfully saved!", style: TextStyle(color: Colors.white),)));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Game failed to save. Please try again.", style: TextStyle(color: Colors.white),)));
+            }
+            loading = false;
+          }, child: Text("Save"))
+        ],
+      );
+    });
+  }
+
   String BestMove = "";
   bool isLoading = true;
   List<String> Moves = [];
@@ -497,7 +531,7 @@ class _ViewGamePageState extends State<ViewGamePage> {
             openSettingBox();
           }, icon: Icon(Icons.settings)),
           IconButton(onPressed: (){
-            FirebaseUtils.AddGame(widget.gameInfo);
+            showSaveDialog();
           }, icon: Icon(Icons.save_alt_rounded))
         ],
 

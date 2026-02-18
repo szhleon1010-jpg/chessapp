@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart' as chess;
 
+import '../Services/Firebase_utils.dart';
+
 class ConfirmGamePage extends StatefulWidget {
   final String gameString;
   final String whiteName;
@@ -74,6 +76,41 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
     );
     return confirm;
   }
+
+  void showSaveDialog() async {
+    bool loading = false;
+
+    showDialog(context: context, builder: (context) {
+      return AlertDialog(
+        backgroundColor: Color(0xff393838),
+        title: Text("Save Game to Library"),
+        content: SizedBox(
+          height: 75,
+          child: Column(
+            children: [
+              Text("Do you want to save this game to your library?"),
+              (loading) ? CircularProgressIndicator() : Container()
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+          TextButton(onPressed: () async {
+            loading = true;
+            bool result = await FirebaseUtils.AddGame(gameInfo);
+            if(result){
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Game successfully saved!", style: TextStyle(color: Colors.white),)));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Game failed to save. Please try again.", style: TextStyle(color: Colors.white),)));
+            }
+            loading = false;
+          }, child: Text("Save"))
+        ],
+      );
+    });
+  }
+
   @override
   void initState(){
     super.initState();
@@ -133,6 +170,11 @@ class _ConfirmGamePageState extends State<ConfirmGamePage> {
         foregroundColor: Colors.white,
         backgroundColor: Color(0xff171515),
         title: Text("Confirm Game?"),
+        actions: [
+          IconButton(onPressed: (){
+            showSaveDialog();
+          }, icon: Icon(Icons.save_alt_rounded))
+        ],
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chessapp/Screens/ViewGame.dart';
 import 'package:chessapp/Screens/confirmPage.dart';
 import 'package:chessapp/Services/OpenAIprompt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,9 +25,9 @@ class _UploadPageState extends State<UploadPage> {
 
   String GameString= "";
   void gotoConfirmScreen()async{
-    // String test = await OpenAIprompt.test();
-    // print(test);
-    if(image != null){
+    if(GameString.isNotEmpty){
+      Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString), date: Timestamp.now(),)));
+    } else if(image != null){
       setState(() {
         loading = true;
       });
@@ -48,8 +47,6 @@ class _UploadPageState extends State<UploadPage> {
         location: gameData["loc"],
         event: gameData["event"],
       )));
-    } else{
-      Navigator.push(context, MaterialPageRoute(builder: (_)=>ConfirmGamePage(gameString:cleanPGN(GameString), date: Timestamp.now(),)));
     }
   }
   String cleanPGN(String pgn) {
