@@ -1,3 +1,5 @@
+import 'package:chessapp/Screens/Accounts/SignInPg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../Constants.dart';
@@ -31,11 +33,20 @@ class _SettingPageState extends State<SettingPage> {
   Widget accountSection(){
     return Column(
       children: [
-        Text("Account", style: TextStyle(fontSize: 15),),
-        Container(
-          child: Column(
-            children: [
-              Container(
+        Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SignInPage()));
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white)
+                ),
                 child: Row(
                   children: [
                     Container(
@@ -49,7 +60,8 @@ class _SettingPageState extends State<SettingPage> {
                     Expanded(
                       child: Column(
                         children: [
-                          Text("Logout"),
+                          Text("Logout", style: TextStyle(fontWeight: FontWeight.bold),),
+                          SizedBox(height: 5,),
                           Text("Sign out of your account")
                         ],
                       )
@@ -57,9 +69,9 @@ class _SettingPageState extends State<SettingPage> {
                     Icon(Icons.chevron_right, color: Colors.white,)
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         )
       ],
     );

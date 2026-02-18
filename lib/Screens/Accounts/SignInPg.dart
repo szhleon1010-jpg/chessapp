@@ -1,3 +1,4 @@
+import 'package:chessapp/Screens/Home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,11 +17,16 @@ class _SignInPageState extends State<SignInPage> {
   final email_controller = TextEditingController();
   final password_controller = TextEditingController();
   final confirming_controller = TextEditingController();
-  Future<void> createaccount ()async {
-    String email = email_controller.text;
-    String password = password_controller.text;
-    String confirming= confirming_controller.text;
-    FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+  Future<void> signIn ()async {
+    try{
+      String email = email_controller.text;
+      String password = password_controller.text;
+      String confirming= confirming_controller.text;
+      FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+    } catch (e){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Account does not exist or password is incorrect.")));
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -74,7 +80,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
             ElevatedButton
               (onPressed: (){
-              createaccount();
+              signIn();
               // Navigator.pop(context);
 
             },
